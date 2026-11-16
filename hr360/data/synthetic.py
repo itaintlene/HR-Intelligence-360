@@ -6,11 +6,14 @@ that the deterministic rules engine must flag.
 from __future__ import annotations
 
 import random
-from contextlib import closing
 from datetime import date, timedelta
 from pathlib import Path
 
+from sqlalchemy import insert
+
+from hr360.data import schema
 from hr360.data.db import HRDatabase
+from hr360.data.engine import is_url
 
 FIRST = ["Aarav", "Priya", "Rohan", "Sneha", "Vikram", "Ananya", "Karan", "Meera", "Arjun", "Divya",
          "Rahul", "Neha", "Sanjay", "Pooja", "Amit", "Kavya", "Nikhil", "Isha", "Manish", "Tara"]
@@ -44,12 +47,13 @@ def _d(x: date | None) -> str | None:
     return x.isoformat() if x else None
 
 
-def build_database(path: Path | str, anchor: date, seed: int = 42) -> HRDatabase:
-    """(Re)create the synthetic database. Dates are relative to ``anchor`` ("today")."""
-    path = Path(path)
-    if path.exists():
-        path.unlink()
-    db = HRDatabase(path)
+def build_database(target: Path | str, anchor: date, seed: int = 42) -> HRDatabase:
+    """(Re)create the synthetic HR tables. ``target`` is a SQLite path or a Postgres URL.
+    Dates are relative to ``anchor`` ("today")."""
+    if not is_url(target) and Path(target).exists():
+        Path(target).unlink()
+    db = HRDatabase(target)
+    db.drop_all()  # clears HR tables only (never audit/ops tables)
     db.init_schema()
     rng = random.Random(seed)
 
@@ -146,14 +150,8 @@ def build_database(path: Path | str, anchor: date, seed: int = 42) -> HRDatabase
                        "days": float(span), "status": "Pending" if n <= 8 else "Approved",
                        "submitted_on": _d(anchor - timedelta(days=rng.randint(0, 6)))})
 
-    with closing(db.connect()) as c, c:
-        c.executemany(
-            "INSERT INTO employees VALUES (:employee_id,:name,:email,:department,:designation,:manager_id,"
-            ":joining_date,:probation_end,:employment_status,:work_location,:salary_band,:national_id)", employees)
-        c.executemany(
-            "INSERT INTO documents (employee_id,doc_type,issue_date,expiry_date,status) VALUES "
-            "(:employee_id,:doc_type,:issue_date,:expiry_date,:status)", docs)
-        c.executemany(
-            "INSERT INTO leave_requests VALUES (:leave_id,:employee_id,:leave_type,:start_date,:end_date,:days,:status,:submitted_on)",
-            leaves)
+    with db.engine.begin() as c:
+        c.execute(insert(schema.employees), employees)
+        c.execute(insert(schema.documents), docs)
+        c.execute(insert(schema.leave_requests), leaves)
     return db

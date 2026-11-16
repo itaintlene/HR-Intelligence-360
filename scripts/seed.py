@@ -12,9 +12,9 @@ from hr360.data.synthetic import build_database  # noqa: E402
 def main() -> None:
     s = Settings()
     s.ensure_dirs()
-    db = build_database(s.db_path, s.as_of)
+    db = build_database(s.hr_target, s.as_of)
     docs = generate_sample_docs(s.sample_docs_dir, db, s.as_of)
-    print(f"Database: {s.db_path}  (as-of {s.as_of})")
+    print(f"Database: {'Postgres (DATABASE_URL)' if s.database_url else s.db_path}  (as-of {s.as_of})")
     print(f"Sample documents ({len(docs)}) in {s.sample_docs_dir}")
 
 

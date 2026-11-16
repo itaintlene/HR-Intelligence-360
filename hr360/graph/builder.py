@@ -20,8 +20,21 @@ from hr360.graph.nodes import guarded, make_approval_node, make_report_node
 from hr360.graph.state import HRGraphState
 
 
-def make_checkpointer(path):
-    """SQLite-backed checkpointer (resumable across restarts); in-memory fallback."""
+def make_checkpointer(path, database_url: str | None = None):
+    """Postgres (Neon) checkpointer when a database URL is given, else SQLite; in-memory as a last resort.
+    Checkpoints make approval-paused workflows resumable across restarts and serverless invocations."""
+    if database_url:
+        from langgraph.checkpoint.postgres import PostgresSaver
+        from psycopg.rows import dict_row
+        from psycopg_pool import ConnectionPool
+
+        from hr360.data.engine import normalize_url
+        url = normalize_url(database_url).replace("postgresql+psycopg://", "postgresql://", 1)
+        pool = ConnectionPool(url, max_size=4, open=True,
+                              kwargs={"autocommit": True, "prepare_threshold": None, "row_factory": dict_row})
+        saver = PostgresSaver(pool)
+        saver.setup()
+        return saver
     try:
         from langgraph.checkpoint.sqlite import SqliteSaver
         from pathlib import Path

@@ -27,8 +27,14 @@ def _env_date(name: str) -> date | None:
     return date.fromisoformat(raw) if raw else None
 
 
+ON_SERVERLESS = bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+_TMP = Path("/tmp/hr360")  # the only writable location on serverless hosts
+
+
 @dataclass
 class Settings:
+    # Postgres/Neon URL. When set, ALL state (HR data, audit log, requests, checkpoints) lives there.
+    database_url: str | None = field(default_factory=lambda: os.getenv("DATABASE_URL") or None)
     db_path: Path = field(default_factory=lambda: Path(os.getenv("HR360_DB", ROOT / "data" / "hr360.db")))
     # audit log + request registry (kept apart so re-seeding synthetic data never wipes them)
     ops_db_path: Path = field(default_factory=lambda: Path(os.getenv("HR360_OPS_DB", ROOT / "data" / "ops.db")))
@@ -37,11 +43,11 @@ class Settings:
     )
     rules_path: Path = ROOT / "hr360" / "rules" / "hr_rules.yaml"
     policy_dir: Path = ROOT / "data" / "policies"
-    index_dir: Path = ROOT / "data" / "index"
-    reports_dir: Path = ROOT / "reports"
-    outbox_path: Path = ROOT / "data" / "outbox.jsonl"
+    index_dir: Path = field(default_factory=lambda: _TMP / "index" if ON_SERVERLESS else ROOT / "data" / "index")
+    reports_dir: Path = field(default_factory=lambda: _TMP / "reports" if ON_SERVERLESS else ROOT / "reports")
+    outbox_path: Path = field(default_factory=lambda: _TMP / "outbox.jsonl" if ON_SERVERLESS else ROOT / "data" / "outbox.jsonl")
     sample_docs_dir: Path = ROOT / "data" / "sample_docs"
-    log_dir: Path = ROOT / "logs"
+    log_dir: Path = field(default_factory=lambda: _TMP / "logs" if ON_SERVERLESS else ROOT / "logs")
     # "auto" -> try sentence-transformers, fall back to a hashing embedder
     embeddings_backend: str = field(default_factory=lambda: os.getenv("HR360_EMBEDDINGS", "auto"))
     # "auto" | "openai" | "ollama" | "none"
@@ -51,8 +57,19 @@ class Settings:
     node_retries: int = 1        # extra attempts per agent node before fallback
     policy_top_k: int = 4
 
+    @property
+    def hr_target(self):
+        return self.database_url or self.db_path
+
+    @property
+    def ops_target(self):
+        return self.database_url or self.ops_db_path
+
     def ensure_dirs(self) -> None:
-        for p in (self.index_dir, self.reports_dir, self.log_dir, Path(self.db_path).parent):
+        dirs = [self.index_dir, self.reports_dir, self.log_dir]
+        if not self.database_url:
+            dirs.append(Path(self.db_path).parent)
+        for p in dirs:
             Path(p).mkdir(parents=True, exist_ok=True)
 
 

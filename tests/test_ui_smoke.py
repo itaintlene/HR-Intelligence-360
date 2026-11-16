@@ -13,6 +13,7 @@ APP = str(Path(__file__).resolve().parent.parent / "hr360" / "ui" / "app.py")
 def app(monkeypatch):
     monkeypatch.setenv("HR360_EMBEDDINGS", "hash")
     monkeypatch.setenv("HR360_LLM", "none")
+    monkeypatch.setenv("DATABASE_URL", "")
     monkeypatch.setenv("HR360_AS_OF", "2026-11-16")
     return AppTest.from_file(APP, default_timeout=120).run()
 

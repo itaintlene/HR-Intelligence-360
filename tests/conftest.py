@@ -40,11 +40,11 @@ class FakeLLM(LLMClient):
 @pytest.fixture(scope="session")
 def settings(tmp_path_factory) -> Settings:
     d = tmp_path_factory.mktemp("hr360")
-    s = Settings(db_path=d / "hr.db", ops_db_path=d / "ops.db", checkpoint_path=d / "cp.db", index_dir=d / "index",
+    s = Settings(database_url=None, db_path=d / "hr.db", ops_db_path=d / "ops.db", checkpoint_path=d / "cp.db", index_dir=d / "index",
                  reports_dir=d / "reports", outbox_path=d / "outbox.jsonl", sample_docs_dir=d / "docs", log_dir=d / "logs",
                  embeddings_backend="hash", llm_backend="none", as_of=ANCHOR)
     s.ensure_dirs()
-    db = build_database(s.db_path, ANCHOR)
+    db = build_database(s.hr_target, ANCHOR)
     generate_sample_docs(s.sample_docs_dir, db, ANCHOR)
     return s
 

@@ -1,57 +1,49 @@
 """High-level runner used by the UI and tests: start requests, pause at approval, resume."""
 from __future__ import annotations
 
-import json
-import sqlite3
 import uuid
-from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
 from langgraph.types import Command
+from sqlalchemy import insert, select, update
 
 from hr360.agents.base import AgentContext
 from hr360.graph.builder import build_graph, make_checkpointer
+from hr360.data.engine import make_engine
+from hr360.data.schema import OPS_METADATA, requests as requests_t
 from hr360.security.audit_log import setup_logging
-
-_DDL = """CREATE TABLE IF NOT EXISTS requests (
-    request_id TEXT PRIMARY KEY, user_id TEXT, role TEXT, query TEXT, task_type TEXT,
-    status TEXT, created_at TEXT, updated_at TEXT)"""
 
 
 class HRRunner:
     def __init__(self, ctx: AgentContext | None = None, checkpointer=None):
         self.ctx = ctx or AgentContext.build()
-        setup_logging(self.ctx.settings.log_dir)
-        self.graph = build_graph(self.ctx, checkpointer or make_checkpointer(self.ctx.settings.checkpoint_path))
-        self._ops = Path(self.ctx.settings.ops_db_path)
-        with closing(sqlite3.connect(self._ops)) as c, c:
-            c.execute(_DDL)
+        s = self.ctx.settings
+        setup_logging(s.log_dir)
+        self.graph = build_graph(self.ctx, checkpointer or make_checkpointer(s.checkpoint_path, s.database_url))
+        self._engine = make_engine(s.ops_target)
+        OPS_METADATA.create_all(self._engine)
 
     # ---- request registry ----
     def _upsert(self, rid: str, **kw) -> None:
         now = datetime.now(timezone.utc).isoformat(timespec="seconds")
-        with closing(sqlite3.connect(self._ops)) as c, c:
-            if c.execute("SELECT 1 FROM requests WHERE request_id=?", (rid,)).fetchone():
-                sets = ", ".join(f"{k}=?" for k in kw) + ", updated_at=?"
-                c.execute(f"UPDATE requests SET {sets} WHERE request_id=?", (*kw.values(), now, rid))
+        with self._engine.begin() as c:
+            exists = c.execute(select(requests_t.c.request_id).where(requests_t.c.request_id == rid)).first()
+            if exists:
+                c.execute(update(requests_t).where(requests_t.c.request_id == rid).values(**kw, updated_at=now))
             else:
-                c.execute("INSERT INTO requests (request_id,user_id,role,query,task_type,status,created_at,updated_at) "
-                          "VALUES (:request_id,:user_id,:role,:query,:task_type,:status,:t,:t)",
-                          {"request_id": rid, "user_id": kw.get("user_id"), "role": kw.get("role"), "query": kw.get("query"),
-                           "task_type": kw.get("task_type"), "status": kw.get("status"), "t": now})
+                c.execute(insert(requests_t).values(
+                    request_id=rid, user_id=kw.get("user_id"), role=kw.get("role"), query=kw.get("query"),
+                    task_type=kw.get("task_type"), status=kw.get("status"), created_at=now, updated_at=now))
 
     def list_requests(self, status: str | None = None, limit: int = 50, user_id: str | None = None) -> list[dict]:
-        where, args = [], []
-        for col, val in (("status", status), ("user_id", user_id)):
-            if val is not None:
-                where.append(f"{col}=?")
-                args.append(val)
-        q = "SELECT * FROM requests" + (" WHERE " + " AND ".join(where) if where else "")
-        args = tuple(args)
-        with closing(sqlite3.connect(self._ops)) as c:
-            c.row_factory = sqlite3.Row
-            return [dict(r) for r in c.execute(q + " ORDER BY created_at DESC LIMIT ?", (*args, limit))]
+        q = select(requests_t).order_by(requests_t.c.created_at.desc()).limit(limit)
+        if status is not None:
+            q = q.where(requests_t.c.status == status)
+        if user_id is not None:
+            q = q.where(requests_t.c.user_id == user_id)
+        with self._engine.connect() as c:
+            return [dict(r._mapping) for r in c.execute(q)]
 
     # ---- execution ----
     @staticmethod

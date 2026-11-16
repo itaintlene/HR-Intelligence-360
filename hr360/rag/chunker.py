@@ -31,7 +31,11 @@ def _read(path: Path) -> str:
         import docx
         return "\n".join(p.text for p in docx.Document(str(path)).paragraphs)
     if s == ".pdf":
-        import pymupdf as fitz
+        try:
+            import pymupdf as fitz
+        except ImportError:  # slim install
+            from pypdf import PdfReader
+            return "\n".join((p.extract_text() or "") for p in PdfReader(str(path)).pages)
         with fitz.open(str(path)) as pdf:
             return "\n".join(page.get_text() for page in pdf)
     raise ValueError(f"Unsupported policy file: {path.name}")

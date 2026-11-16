@@ -4,7 +4,7 @@ from __future__ import annotations
 import os
 import re
 import uuid
-from contextlib import asynccontextmanager
+import threading
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from hr360.agents.base import AgentContext
 from hr360.api.auth import Principal, get_principal, require_permission
 from hr360.config import Settings
-from hr360.data.db import public_employee_view
+from hr360.data.db import HRDatabase, public_employee_view
 from hr360.data.sample_docs import generate_sample_docs
 from hr360.data.synthetic import build_database
 from hr360.graph.runner import HRRunner
@@ -30,22 +30,26 @@ STAFF_KEYS = ["audit_findings", "audit_summary", "workflow_recommendations", "ge
 PM_KEYS = ["workflow_recommendations", "workflow_summary"]
 
 
+_runner_lock = threading.Lock()
+
+
 def get_runner() -> HRRunner:
+    """Lazily build the runner on first use (works on serverless hosts that skip ASGI lifespan events)."""
+    if getattr(app.state, "runner", None) is None:
+        with _runner_lock:
+            if getattr(app.state, "runner", None) is None:
+                s = Settings()
+                s.ensure_dirs()
+                db = HRDatabase(s.hr_target)
+                if not db.has_data():
+                    db = build_database(s.hr_target, s.as_of)
+                    if not s.database_url:
+                        generate_sample_docs(s.sample_docs_dir, db, s.as_of)
+                app.state.runner = HRRunner(AgentContext.build(s))
     return app.state.runner
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    if not getattr(app.state, "runner", None):
-        s = Settings()
-        s.ensure_dirs()
-        if not Path(s.db_path).exists():
-            generate_sample_docs(s.sample_docs_dir, build_database(s.db_path, s.as_of), s.as_of)
-        app.state.runner = HRRunner(AgentContext.build(s))
-    yield
-
-
-app = FastAPI(title="HR Intelligence 360 API", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="HR Intelligence 360 API", version="0.2.0")
 app.add_middleware(CORSMiddleware, allow_origins=[o for o in os.getenv("HR360_CORS_ORIGINS", "http://localhost:5173").split(",") if o],
                    allow_methods=["*"], allow_headers=["*"], allow_credentials=False)
 

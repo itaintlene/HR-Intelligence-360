@@ -17,7 +17,7 @@ import streamlit as st  # noqa: E402
 
 from hr360.agents.base import AgentContext  # noqa: E402
 from hr360.config import Settings  # noqa: E402
-from hr360.data.db import public_employee_view  # noqa: E402
+from hr360.data.db import HRDatabase, public_employee_view  # noqa: E402
 from hr360.data.sample_docs import generate_sample_docs  # noqa: E402
 from hr360.data.synthetic import build_database  # noqa: E402
 from hr360.graph.runner import HRRunner  # noqa: E402
@@ -39,8 +39,8 @@ SEV_ICON = {"critical": "🟥", "high": "🟧", "medium": "🟨", "low": "🟩"}
 def get_runner() -> HRRunner:
     settings = Settings()
     settings.ensure_dirs()
-    if not Path(settings.db_path).exists():
-        db = build_database(settings.db_path, settings.as_of)
+    if not HRDatabase(settings.hr_target).has_data():
+        db = build_database(settings.hr_target, settings.as_of)
         generate_sample_docs(settings.sample_docs_dir, db, settings.as_of)
     return HRRunner(AgentContext.build(settings))
 
@@ -58,7 +58,7 @@ with st.sidebar:
     st.divider()
     st.caption(f"As-of date: **{ctx.settings.as_of}**  ·  LLM: **{'on' if ctx.llm.available else 'offline (deterministic fallbacks)'}**")
     if st.button("Re-seed synthetic data"):
-        db = build_database(ctx.settings.db_path, ctx.settings.as_of)
+        db = build_database(ctx.settings.hr_target, ctx.settings.as_of)
         generate_sample_docs(ctx.settings.sample_docs_dir, db, ctx.settings.as_of)
         st.success("Synthetic data regenerated.")
 

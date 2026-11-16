@@ -1,0 +1,13 @@
+-r requirements.txt
+# local dev extras
+uvicorn[standard]
+langgraph-checkpoint-sqlite
+langchain-community
+langchain-ollama
+sentence-transformers
+spacy
+pytesseract
+pymupdf
+Pillow
+streamlit
+pytest

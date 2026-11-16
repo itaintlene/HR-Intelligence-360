@@ -86,3 +86,17 @@ denial and approval · synthetic data only · no hiring/firing/ranking/payroll a
 * Email "sending" is a simulated outbox; leave decisions are summarised, never made.
 * Rule/extraction patterns target the synthetic document formats; real documents need more templates or a layout model.
 * The hash embedder is a fallback; accuracy numbers in `hr360.evaluation` were measured with both backends on a small labelled set.
+
+## Deployment (Vercel + Neon)
+
+| Piece | Where | Notes |
+|---|---|---|
+| Web (React) | Vercel project `hr360-web` (`web/`) | env: `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_API_URL` |
+| API (FastAPI) | Vercel project `hr360-api` (repo root, `api/index.py`) | slim `requirements.txt`; no OCR/torch/spaCy; `HR360_EMBEDDINGS=hash` |
+| Data, audit log, requests, LangGraph checkpoints | Neon Postgres via `DATABASE_URL` | seed once: `python scripts/seed.py` (pin `HR360_AS_OF`) |
+| LLM | any OpenAI-compatible API (`OPENAI_BASE_URL`, `OPENAI_API_KEY`, `HR360_LLM_MODEL`) | tested with Gemini `gemini-2.5-flash` |
+| Email | Resend (`RESEND_API_KEY`) | sends only after approval; see `hr360/email_sender.py` safety modes |
+| Tracing | LangSmith (`LANGSMITH_*`) | |
+
+Local secrets live in the gitignored `.env` (loaded automatically). Full local dev deps: `pip install -r requirements-full.txt`.
+Live Postgres test: `HR360_RUN_INTEGRATION=1 pytest tests/test_postgres_integration.py`.

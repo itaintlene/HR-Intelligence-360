@@ -13,3 +13,9 @@ web/node_modules/
 web/dist/
 web/.env.local
 *.tsbuildinfo
+.vercel
+
+.vercel
+.env*
+test-users.local.txt
+.env.local

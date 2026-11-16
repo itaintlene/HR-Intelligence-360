@@ -1,57 +1,51 @@
-"""Append-only audit log (SQLite) of agent execution and consequential actions,
+"""Append-only audit log (SQLite or Postgres) of agent execution and consequential actions,
 plus standard Python logging setup."""
 from __future__ import annotations
 
 import json
 import logging
-import sqlite3
-from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
 
-_DDL = """CREATE TABLE IF NOT EXISTS audit_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT NOT NULL, request_id TEXT,
-    actor TEXT, role TEXT, agent TEXT, action TEXT NOT NULL, detail TEXT)"""
+from sqlalchemy import insert, select
+
+from hr360.data.engine import make_engine
+from hr360.data.schema import OPS_METADATA, audit_log
 
 
 def setup_logging(log_dir: Path, level: int = logging.INFO) -> None:
-    log_dir = Path(log_dir)
-    log_dir.mkdir(parents=True, exist_ok=True)
     root = logging.getLogger("hr360")
     if root.handlers:
         return
     root.setLevel(level)
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(name)s :: %(message)s")
-    fh = logging.FileHandler(log_dir / "hr360.log", encoding="utf-8")
-    fh.setFormatter(fmt)
-    root.addHandler(fh)
+    try:
+        log_dir = Path(log_dir)
+        log_dir.mkdir(parents=True, exist_ok=True)
+        handler: logging.Handler = logging.FileHandler(log_dir / "hr360.log", encoding="utf-8")
+    except OSError:  # read-only filesystem (serverless): log to stderr instead
+        handler = logging.StreamHandler()
+    handler.setFormatter(fmt)
+    root.addHandler(handler)
 
 
 class AuditLog:
-    def __init__(self, db_path: Path):
-        self.db_path = Path(db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        with closing(self._conn()) as c, c:
-            c.execute(_DDL)
-
-    def _conn(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.db_path)
+    def __init__(self, target):
+        self.engine = make_engine(target)
+        OPS_METADATA.create_all(self.engine)
 
     def record(self, action: str, *, request_id: str | None = None, actor: str | None = None,
                role: str | None = None, agent: str | None = None, detail: dict | str | None = None) -> None:
         if isinstance(detail, (dict, list)):
             detail = json.dumps(detail, default=str)
-        with closing(self._conn()) as c, c:
-            c.execute(
-                "INSERT INTO audit_log (ts, request_id, actor, role, agent, action, detail) VALUES (?,?,?,?,?,?,?)",
-                (datetime.now(timezone.utc).isoformat(timespec="seconds"), request_id, actor, role, agent, action, detail),
-            )
+        with self.engine.begin() as c:
+            c.execute(insert(audit_log).values(
+                ts=datetime.now(timezone.utc).isoformat(timespec="seconds"), request_id=request_id, actor=actor,
+                role=role, agent=agent, action=action, detail=detail))
 
     def fetch(self, request_id: str | None = None, limit: int = 500) -> list[dict]:
-        q, args = "SELECT * FROM audit_log", ()
+        q = select(audit_log).order_by(audit_log.c.id.desc()).limit(limit)
         if request_id:
-            q, args = q + " WHERE request_id=?", (request_id,)
-        q += " ORDER BY id DESC LIMIT ?"
-        with closing(self._conn()) as c:
-            c.row_factory = sqlite3.Row
-            return [dict(r) for r in c.execute(q, (*args, limit))]
+            q = q.where(audit_log.c.request_id == request_id)
+        with self.engine.connect() as c:
+            return [dict(r._mapping) for r in c.execute(q)]

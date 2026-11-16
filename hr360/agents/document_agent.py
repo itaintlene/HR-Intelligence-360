@@ -74,8 +74,12 @@ class DocumentIntelligenceAgent:
     def _ensure_nlp(self):
         if self._nlp is not None:
             return
-        import spacy
-        from spacy.matcher import PhraseMatcher
+        try:
+            import spacy
+            from spacy.matcher import PhraseMatcher
+        except ImportError:  # slim/serverless install: fall back to plain vocabulary matching
+            self._nlp, self.has_ner = "fallback", False
+            return
         try:
             nlp = spacy.load("en_core_web_sm", disable=["lemmatizer"])
             self.has_ner = True
@@ -91,6 +95,14 @@ class DocumentIntelligenceAgent:
 
     def _phrase_hits(self, text: str) -> dict[str, list[str]]:
         self._ensure_nlp()
+        if self._nlp == "fallback":
+            hits = {"DEPARTMENT": [], "DESIGNATION": []}
+            for label, key in (("DEPARTMENT", "departments"), ("DESIGNATION", "designations")):
+                for term in sorted(self.rs.vocab.get(key, []), key=len, reverse=True):
+                    m = re.search(rf"{re.escape(term)}", text, re.IGNORECASE)
+                    if m:
+                        hits[label].append(term)
+            return hits
         doc = self._nlp.make_doc(text) if not self.has_ner else self._nlp(text)
         hits: dict[str, list[str]] = {"DEPARTMENT": [], "DESIGNATION": []}
         for mid, s, e in self._matcher(doc):
@@ -116,7 +128,14 @@ class DocumentIntelligenceAgent:
                     parts.append(" | ".join(c.text.strip() for c in row.cells))
             return "\n".join(parts), 1, False, 1.0
         if suffix == ".pdf":
-            import pymupdf as fitz
+            try:
+                import pymupdf as fitz
+            except ImportError:  # slim install (serverless): text-layer PDFs only, no page rendering/OCR
+                from pypdf import PdfReader
+                pages = [(p.extract_text() or "").strip() for p in PdfReader(str(path)).pages]
+                if any(len(t) < 30 for t in pages):
+                    raise RuntimeError("PDF has scanned (image-only) pages; OCR is not available in this deployment")
+                return "\n".join(pages), len(pages), False, 1.0
             texts, confs, ocr_used = [], [], False
             with fitz.open(str(path)) as pdf:
                 for page in pdf:

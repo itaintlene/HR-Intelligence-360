@@ -1,54 +1,39 @@
-"""SQLite data access (PostgreSQL later: swap the connection factory, keep the queries)."""
+"""HR data access (SQLite for dev/tests, Postgres/Neon when DATABASE_URL is set)."""
 from __future__ import annotations
 
-import sqlite3
-from contextlib import closing
-from pathlib import Path
-
 import pandas as pd
+from sqlalchemy import inspect, text
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS employees (
-    employee_id TEXT PRIMARY KEY, name TEXT, email TEXT, department TEXT, designation TEXT,
-    manager_id TEXT, joining_date TEXT, probation_end TEXT, employment_status TEXT,
-    work_location TEXT, salary_band TEXT, national_id TEXT
-);
-CREATE TABLE IF NOT EXISTS documents (
-    doc_id INTEGER PRIMARY KEY AUTOINCREMENT, employee_id TEXT, doc_type TEXT,
-    issue_date TEXT, expiry_date TEXT, status TEXT
-);
-CREATE TABLE IF NOT EXISTS leave_requests (
-    leave_id TEXT PRIMARY KEY, employee_id TEXT, leave_type TEXT, start_date TEXT,
-    end_date TEXT, days REAL, status TEXT, submitted_on TEXT
-);
-"""
+from hr360.data.engine import make_engine
+from hr360.data.schema import HR_METADATA
 
 # employees columns that must never be shown unmasked / sent to an LLM
 SENSITIVE_COLUMNS = ("national_id", "salary_band")
 
 
 class HRDatabase:
-    def __init__(self, path: Path | str):
-        self.path = Path(path)
-
-    def connect(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.path)
+    def __init__(self, target):
+        """``target``: filesystem path, database URL, or an existing SQLAlchemy Engine."""
+        self.engine = make_engine(target)
 
     def init_schema(self) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        with closing(self.connect()) as c, c:
-            c.executescript(SCHEMA)
+        HR_METADATA.create_all(self.engine)
+
+    def drop_all(self) -> None:
+        HR_METADATA.drop_all(self.engine)
 
     def exists(self) -> bool:
-        if not self.path.exists():
-            return False
-        with closing(self.connect()) as c:
-            row = c.execute("SELECT name FROM sqlite_master WHERE name='employees'").fetchone()
-        return row is not None
+        return inspect(self.engine).has_table("employees")
 
-    def _df(self, sql: str, params: tuple = ()) -> pd.DataFrame:
-        with closing(self.connect()) as c:
-            return pd.read_sql_query(sql, c, params=params)
+    def has_data(self) -> bool:
+        if not self.exists():
+            return False
+        with self.engine.connect() as c:
+            return bool(c.execute(text("SELECT COUNT(*) FROM employees")).scalar())
+
+    def _df(self, sql: str, params: dict | None = None) -> pd.DataFrame:
+        with self.engine.connect() as c:
+            return pd.read_sql_query(text(sql), c, params=params or {})
 
     # --- read APIs used by agents (tools) ---
     def employees(self) -> pd.DataFrame:
@@ -59,11 +44,11 @@ class HRDatabase:
 
     def leave_requests(self, status: str | None = None) -> pd.DataFrame:
         if status:
-            return self._df("SELECT * FROM leave_requests WHERE status=? ORDER BY start_date", (status,))
+            return self._df("SELECT * FROM leave_requests WHERE status=:s ORDER BY start_date", {"s": status})
         return self._df("SELECT * FROM leave_requests ORDER BY start_date")
 
     def get_employee(self, employee_id: str) -> dict | None:
-        df = self._df("SELECT * FROM employees WHERE employee_id=?", (employee_id,))
+        df = self._df("SELECT * FROM employees WHERE employee_id=:e", {"e": employee_id})
         return None if df.empty else df.iloc[0].to_dict()
 
     def employee_contact(self, employee_id: str) -> tuple[str | None, str | None]:

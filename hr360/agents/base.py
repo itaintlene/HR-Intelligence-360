@@ -25,6 +25,6 @@ class AgentContext:
         settings = settings or Settings()
         settings.ensure_dirs()
         ruleset = load_ruleset(settings.rules_path)
-        return cls(settings=settings, db=HRDatabase(settings.db_path),
+        return cls(settings=settings, db=HRDatabase(settings.hr_target),
                    llm=llm or LLMClient(settings.llm_backend), ruleset=ruleset,
-                   engine=RulesEngine(ruleset), audit_log=AuditLog(settings.ops_db_path))
+                   engine=RulesEngine(ruleset), audit_log=AuditLog(settings.ops_target))

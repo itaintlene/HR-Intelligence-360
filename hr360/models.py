@@ -55,7 +55,7 @@ class EmailDraft(BaseModel):
     subject: str
     body: str
     purpose: str = "missing_documents"
-    status: Literal["draft", "approved", "rejected", "queued"] = "draft"
+    status: Literal["draft", "approved", "rejected", "queued", "sent", "failed"] = "draft"
     requires_approval: bool = True
 
 

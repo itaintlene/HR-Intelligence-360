@@ -4,11 +4,16 @@ from __future__ import annotations
 import json
 import logging
 import time
+from collections import Counter
+from datetime import datetime, timezone
 from typing import Callable
 
 from langgraph.types import interrupt
+from sqlalchemy import insert
 
 from hr360.agents.base import AgentContext
+from hr360.data.schema import outbox
+from hr360.email_sender import send_email
 from hr360.reporting.report import generate_report
 from hr360.security.rbac import role_can
 
@@ -90,25 +95,36 @@ def make_approval_node(ctx: AgentContext) -> Callable[[dict], dict]:
         updated, queued = [], 0
         for d in drafts:
             if d["draft_id"] in chosen:
-                _queue_email(ctx, d, approver)
-                updated.append({**d, "status": "queued"})
+                updated.append({**d, "status": _queue_email(ctx, d, approver, rid)})
                 queued += 1
             else:
                 updated.append({**d, "status": "rejected"})
         ctx.audit_log.record("approval_granted", request_id=rid, actor=approver, role=role, agent="approval",
                              detail={"queued": queued, "comment": decision.get("comment", "")})
         return {"approval_status": "approved", "approval_decision": decision, "generated_email_drafts": updated,
-                "agent_execution_status": {"approval": {"status": "completed", "detail": f"{queued} queued"}}}
+                "agent_execution_status": {"approval": {"status": "completed", "detail": ", ".join(
+                    f"{k}={v}" for k, v in Counter(u["status"] for u in updated).items())}}}
 
     return approval
 
 
-def _queue_email(ctx: AgentContext, draft: dict, approver: str) -> None:
-    """Materialise an APPROVED draft into the outbox file. No SMTP in the prototype: delivery is simulated."""
+def _queue_email(ctx: AgentContext, draft: dict, approver: str, request_id: str | None) -> str:
+    """Release an APPROVED draft: record it in the outbox table and send via Resend if configured
+    (see hr360/email_sender.py for the safety rules). Returns the resulting draft status."""
     first, email = ctx.db.employee_contact(draft["employee_id"])
-    record = {"draft_id": draft["draft_id"], "employee_id": draft["employee_id"], "to": email,
-              "subject": draft["subject"], "body": draft["body"].replace("{first_name}", first or "there"),
-              "approved_by": approver, "delivery": "simulated (no SMTP configured)"}
-    ctx.settings.outbox_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(ctx.settings.outbox_path, "a", encoding="utf-8") as fh:
-        fh.write(json.dumps(record) + "\n")
+    body = draft["body"].replace("{first_name}", first or "there")
+    result = send_email(email, draft["subject"], body, draft["employee_id"], f"{request_id}-{draft['draft_id']}")
+    record = {"ts": datetime.now(timezone.utc).isoformat(timespec="seconds"), "request_id": request_id,
+              "draft_id": draft["draft_id"], "employee_id": draft["employee_id"], "to_addr": result.to or email,
+              "subject": draft["subject"], "body": body, "approved_by": approver,
+              "delivery": f"{result.delivery}" + (f" ({result.detail})" if result.detail else ""),
+              "provider_id": result.provider_id}
+    with ctx.audit_log.engine.begin() as c:
+        c.execute(insert(outbox).values(**record))
+    try:  # local convenience copy; unavailable on read-only hosts
+        ctx.settings.outbox_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(ctx.settings.outbox_path, "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record) + "\n")
+    except OSError:
+        pass
+    return {"sent": "sent", "failed": "failed"}.get(result.delivery, "queued")
