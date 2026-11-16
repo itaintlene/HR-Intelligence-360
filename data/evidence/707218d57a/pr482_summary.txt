@@ -1,0 +1,3 @@
+Pull request 482: add retry with exponential backoff to the payment webhook handler.
+Tests: 14 added, all passing.
+Reviewed by two engineers.

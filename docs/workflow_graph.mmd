@@ -11,6 +11,7 @@ graph TD;
 	policy(policy)
 	audit(audit)
 	workflow(workflow)
+	work_insights(work_insights)
 	report(report)
 	approval(approval)
 	finalize(finalize)
@@ -24,11 +25,13 @@ graph TD;
 	dispatch -.-> finalize;
 	dispatch -.-> policy;
 	dispatch -.-> report;
+	dispatch -.-> work_insights;
 	dispatch -.-> workflow;
 	document_intelligence --> dispatch;
 	policy --> dispatch;
 	report --> dispatch;
 	supervisor --> dispatch;
+	work_insights --> dispatch;
 	workflow --> dispatch;
 	finalize --> __end__;
 	classDef default fill:#f2f0ff,line-height:1.2

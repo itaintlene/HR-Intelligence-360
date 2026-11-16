@@ -90,9 +90,6 @@ export function DashboardPage() {
               ))}
             </CardContent>
           </Card>
-          <Card className="md:col-span-2">
-            <CardContent className="pt-5 text-sm">{s.narrative}</CardContent>
-          </Card>
         </div>
       )}
       {run.data && <ResultView result={run.data} />}
