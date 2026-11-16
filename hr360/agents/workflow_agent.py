@@ -58,9 +58,14 @@ class HRWorkflowAgent:
                           recipient_masked=mask_email(email), subject=f"Action needed: {len(missing)} onboarding document(s) pending",
                           body=body)
 
-    def leave_recommendations(self) -> list[WorkflowRecommendation]:
+    def leave_recommendations(self, manager_id: str | None = None) -> list[WorkflowRecommendation]:
+        """``manager_id`` limits the summary to that manager's direct reports (PM role)."""
         leaves = self.ctx.db.leave_requests()
-        emps = self.ctx.db.employees().set_index("employee_id")["department"].to_dict()
+        all_emps = self.ctx.db.employees()
+        emps = all_emps.set_index("employee_id")["department"].to_dict()
+        if manager_id is not None:
+            team = set(all_emps[all_emps["manager_id"] == manager_id]["employee_id"])
+            leaves = leaves[leaves["employee_id"].isin(team)]
         if leaves.empty:
             return []
         leaves = leaves.assign(_s=pd.to_datetime(leaves["start_date"]), _e=pd.to_datetime(leaves["end_date"]),
@@ -136,7 +141,8 @@ class HRWorkflowAgent:
         elif task == "audit_summary":
             recs.extend(self.task_recommendations(findings))
         elif task == "leave_summary":
-            recs.extend(self.leave_recommendations())
+            scoped = state.get("user_id") if state.get("user_role") == "pm" else None
+            recs.extend(self.leave_recommendations(manager_id=scoped or ("__none__" if state.get("user_role") == "pm" else None)))
         return {"workflow_recommendations": [r.model_dump() for r in recs],
                 "generated_email_drafts": [d.model_dump() for d in drafts],
                 "workflow_summary": self.summarize(state, recs, drafts)}

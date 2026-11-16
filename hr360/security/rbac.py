@@ -3,11 +3,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-ROLES = ("employee", "hr_staff", "hr_manager", "admin")
+ROLES = ("employee", "pm", "hr_staff", "hr_manager", "admin")
 
-_STAFF = {"policy_query", "document_upload", "run_audit", "run_workflow", "view_employee_masked"}
+_STAFF = {"policy_query", "document_upload", "run_audit", "run_workflow", "view_employee_masked", "view_team_leave"}
 PERMISSIONS: dict[str, set[str]] = {
     "employee": {"policy_query"},
+    # project manager: policy Q&A + leave summary scoped to their direct reports (never approves HR actions)
+    "pm": {"policy_query", "view_team_leave"},
     "hr_staff": set(_STAFF),
     "hr_manager": _STAFF | {"view_employee_full", "approve_actions"},
     "admin": _STAFF | {"view_employee_full", "approve_actions", "view_audit_log"},
@@ -19,7 +21,7 @@ TASK_PERMISSION = {
     "document_audit": "document_upload",
     "onboarding": "run_workflow",
     "audit_summary": "run_audit",
-    "leave_summary": "run_workflow",
+    "leave_summary": "view_team_leave",
 }
 
 

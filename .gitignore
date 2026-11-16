@@ -9,3 +9,7 @@ data/*.db
 data/index/
 data/uploads/
 data/outbox.jsonl
+web/node_modules/
+web/dist/
+web/.env.local
+*.tsbuildinfo

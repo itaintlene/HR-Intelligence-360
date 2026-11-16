@@ -17,3 +17,8 @@ streamlit
 reportlab
 pyyaml
 pytest
+fastapi
+uvicorn[standard]
+PyJWT[crypto]
+httpx
+python-multipart

@@ -41,10 +41,14 @@ class HRRunner:
                           {"request_id": rid, "user_id": kw.get("user_id"), "role": kw.get("role"), "query": kw.get("query"),
                            "task_type": kw.get("task_type"), "status": kw.get("status"), "t": now})
 
-    def list_requests(self, status: str | None = None, limit: int = 50) -> list[dict]:
-        q, args = "SELECT * FROM requests", ()
-        if status:
-            q, args = q + " WHERE status=?", (status,)
+    def list_requests(self, status: str | None = None, limit: int = 50, user_id: str | None = None) -> list[dict]:
+        where, args = [], []
+        for col, val in (("status", status), ("user_id", user_id)):
+            if val is not None:
+                where.append(f"{col}=?")
+                args.append(val)
+        q = "SELECT * FROM requests" + (" WHERE " + " AND ".join(where) if where else "")
+        args = tuple(args)
         with closing(sqlite3.connect(self._ops)) as c:
             c.row_factory = sqlite3.Row
             return [dict(r) for r in c.execute(q + " ORDER BY created_at DESC LIMIT ?", (*args, limit))]
