@@ -46,14 +46,13 @@ def authorize_task(role: str, task_type: str) -> tuple[bool, str]:
 
 
 def mask_email(email: str | None) -> str:
-    if not email or "@" not in email:
+    if not isinstance(email, str) or "@" not in email:  # missing values arrive as None / NaN
         return "***"
     local, domain = email.split("@", 1)
     return f"{local[:1]}***@{domain}"
 
 
 def mask_id(value: str | None) -> str:
-    if not value:
+    if not isinstance(value, str) or not value:
         return ""
-    value = str(value)
     return "*" * max(len(value) - 4, 0) + value[-4:]

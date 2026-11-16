@@ -19,3 +19,4 @@ web/.env.local
 .env*
 test-users.local.txt
 .env.local
+data/sim/

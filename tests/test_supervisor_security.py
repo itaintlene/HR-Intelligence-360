@@ -81,3 +81,14 @@ def test_injection_detection_and_stripping():
     clean, removed = strip_injection(text)
     assert "Ignore" not in clean and "Department: Sales" in clean and len(removed) == 1
     assert not detect_injection("Please find my address proof attached.")
+
+
+def test_masking_tolerates_missing_values():
+    import math
+    assert mask_email(None) == "***" and mask_email(float("nan")) == "***" and mask_email("") == "***"
+    assert mask_id(None) == "" and mask_id(math.nan) == ""
+    import pandas as pd
+    from hr360.data.db import public_employee_view
+    df = pd.DataFrame({"employee_id": ["E1"], "email": [None], "national_id": [None], "salary_band": ["B1"]})
+    out = public_employee_view(df)
+    assert out.loc[0, "email"] == "***" and "salary_band" not in out
