@@ -28,10 +28,19 @@ class SendResult:
     to: str | None = None
 
 
-def send_email(to_employee_email: str | None, subject: str, body: str, employee_id: str, idempotency_key: str) -> SendResult:
+def send_email(to_employee_email: str | None, subject: str, body: str, employee_id: str, idempotency_key: str,
+               mode: str | None = None, redirect_to: str | None = None) -> SendResult:
+    """``mode``/``redirect_to`` (from the admin settings page) take precedence over environment variables.
+    mode: "off" | "redirect" | "live"."""
     key = os.getenv("RESEND_API_KEY")
-    redirect = os.getenv("HR360_EMAIL_REDIRECT_TO") or None
-    live = os.getenv("HR360_EMAIL_LIVE", "").lower() == "true"
+    if mode is None:
+        redirect = os.getenv("HR360_EMAIL_REDIRECT_TO") or None
+        live = os.getenv("HR360_EMAIL_LIVE", "").lower() == "true"
+    else:
+        redirect = (redirect_to or None) if mode == "redirect" else None
+        live = mode == "live"
+        if mode == "off" or (mode == "redirect" and not redirect):
+            return SendResult("not_sent", detail=f"email mode '{mode}'" + (" without a redirect address" if mode == "redirect" else ""))
     if not key:
         return SendResult("not_sent", detail="RESEND_API_KEY not configured")
     if redirect:

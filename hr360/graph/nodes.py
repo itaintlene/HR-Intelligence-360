@@ -12,6 +12,7 @@ from langgraph.types import interrupt
 from sqlalchemy import insert
 
 from hr360.agents.base import AgentContext
+from hr360 import app_settings
 from hr360.data.schema import outbox
 from hr360.email_sender import send_email
 from hr360.reporting.report import generate_report
@@ -113,7 +114,10 @@ def _queue_email(ctx: AgentContext, draft: dict, approver: str, request_id: str 
     (see hr360/email_sender.py for the safety rules). Returns the resulting draft status."""
     first, email = ctx.db.employee_contact(draft["employee_id"])
     body = draft["body"].replace("{first_name}", first or "there")
-    result = send_email(email, draft["subject"], body, draft["employee_id"], f"{request_id}-{draft['draft_id']}")
+    cfg = app_settings.get_all(ctx.audit_log.engine)
+    result = send_email(email, draft["subject"], body, draft["employee_id"], f"{request_id}-{draft['draft_id']}",
+                        mode=None if cfg.get("email_mode") in (None, "env") else cfg["email_mode"],
+                        redirect_to=cfg.get("email_redirect_to"))
     record = {"ts": datetime.now(timezone.utc).isoformat(timespec="seconds"), "request_id": request_id,
               "draft_id": draft["draft_id"], "employee_id": draft["employee_id"], "to_addr": result.to or email,
               "subject": draft["subject"], "body": body, "approved_by": approver,

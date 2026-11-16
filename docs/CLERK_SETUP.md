@@ -72,3 +72,10 @@ curl -H "X-Dev-User: me" -H "X-Dev-Role: hr" http://localhost:8000/api/me
 | Employee directory | – | – | masked | full | full |
 | Approve email drafts | – | – | – | ✅ | ✅ |
 | Audit log | – | – | – | – | ✅ |
+
+## Default role & admin console (v0.3)
+* **Everyone defaults to `employee`.** An account with no (or an invalid) `role` in public metadata gets employee access only.
+* **Admin console:** `/admin` (not linked in the sidebar). Only HR admins (`{"role":"hr","hr_level":"admin"}`) can open it; others see "Page not found" and the API returns 403. Tabs: Users (assign role / HR level / employee id), Settings (email delivery mode), System (status).
+* It edits roles through the Clerk Backend API, so the **API needs `CLERK_SECRET_KEY`** (Dashboard -> API keys -> Secret key). Never put it in the frontend.
+* **First admin:** set `HR360_BOOTSTRAP_ADMIN_IDS=user_xxx[,user_yyy]` (Clerk user ids) on the API. Those users are always HR admins; they cannot be edited from the UI. You cannot change your own role from the UI.
+* Every role/settings change is written to the audit log (`admin_set_role`, `admin_update_settings`).

@@ -41,10 +41,18 @@ def to_internal_role(portal_role: str, metadata: dict) -> str:
     return portal_role  # employee | pm
 
 
+def bootstrap_admin_ids() -> set[str]:
+    """Clerk user ids always treated as HR admins (so the very first admin can reach /admin)."""
+    return {x.strip() for x in os.getenv("HR360_BOOTSTRAP_ADMIN_IDS", "").split(",") if x.strip()}
+
+
 def _principal_from_metadata(sub: str, md: dict, name: str = "") -> Principal:
+    """Least privilege: anyone without a valid role in their Clerk metadata is an ``employee``."""
+    if sub in bootstrap_admin_ids():
+        md = {**md, "role": "hr", "hr_level": "admin"}
     role = md.get("role")
     if role not in PORTAL_ROLES:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "No HR360 role assigned to this account. Ask an admin.")
+        role = "employee"
     return Principal(sub, role, to_internal_role(role, md), md.get("employee_id"), name)
 
 

@@ -41,6 +41,12 @@ export function useApi() {
     [json],
   );
 
+  const sendJson = useCallback(
+    <T,>(method: "PUT" | "PATCH" | "DELETE", path: string, body?: unknown) =>
+      json<T>(path, { method, headers: { "Content-Type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) }),
+    [json],
+  );
+
   const download = useCallback(
     async (path: string, filename: string) => {
       const blob = await (await raw(path)).blob();
@@ -54,5 +60,5 @@ export function useApi() {
     [raw],
   );
 
-  return { raw, json, postJson, download };
+  return { raw, json, postJson, sendJson, download };
 }

@@ -6,6 +6,7 @@ import {
   ApprovalsPage, AskPage, AuditLogPage, DashboardPage, EmployeesPage, RequestsPage, TeamLeavePage, WorkflowsPage,
 } from "@/pages/pages";
 import { useMe } from "@/lib/me";
+import { AdminPage } from "@/pages/admin";
 
 const rootRoute = createRootRoute({ component: () => <Outlet /> });
 
@@ -44,9 +45,13 @@ const approvals = createRoute({
 const employees = createRoute({ getParentRoute: () => app, path: "/employees", component: () => <Require perm="view_employee_masked"><EmployeesPage /></Require> });
 const auditLog = createRoute({ getParentRoute: () => app, path: "/audit-log", component: () => <Require perm="view_audit_log"><AuditLogPage /></Require> });
 
+// Admin console: intentionally NOT linked from the sidebar - reached by URL only, admins only (enforced server-side too).
+const admin = createRoute({ getParentRoute: () => rootRoute, path: "/admin", component: AdminPage });
+
 const routeTree = rootRoute.addChildren([
   landing,
   signIn,
+  admin,
   app.addChildren([appIndex, ask, requests, teamLeave, dashboard, assistant, approvals, employees, auditLog]),
 ]);
 

@@ -49,7 +49,7 @@ def get_runner() -> HRRunner:
     return app.state.runner
 
 
-app = FastAPI(title="HR Intelligence 360 API", version="0.2.0")
+app = FastAPI(title="HR Intelligence 360 API", version="0.3.0")
 app.add_middleware(CORSMiddleware, allow_origins=[o for o in os.getenv("HR360_CORS_ORIGINS", "http://localhost:5173").split(",") if o],
                    allow_methods=["*"], allow_headers=["*"], allow_credentials=False)
 
@@ -180,3 +180,8 @@ def report(request_id: str, kind: str, p: Principal = Depends(get_principal), ru
     if not path or not Path(path).exists():
         raise HTTPException(404, "Report not found")
     return FileResponse(path, filename=Path(path).name)
+
+
+from hr360.api.admin import router as admin_router  # noqa: E402
+
+app.include_router(admin_router)

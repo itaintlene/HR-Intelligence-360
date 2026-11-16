@@ -31,6 +31,11 @@ requests = Table(
     Column("request_id", String(32), primary_key=True),
     *[Column(c, Text) for c in ("user_id", "role", "query", "task_type", "status", "created_at", "updated_at")])
 
+app_settings = Table(
+    "app_settings", OPS_METADATA,
+    Column("key", String(64), primary_key=True),
+    *[Column(c, Text) for c in ("value", "updated_by", "updated_at")])
+
 outbox = Table(
     "outbox", OPS_METADATA,
     Column("id", Integer, primary_key=True, autoincrement=True),

@@ -12,7 +12,7 @@ PERMISSIONS: dict[str, set[str]] = {
     "pm": {"policy_query", "view_team_leave"},
     "hr_staff": set(_STAFF),
     "hr_manager": _STAFF | {"view_employee_full", "approve_actions"},
-    "admin": _STAFF | {"view_employee_full", "approve_actions", "view_audit_log"},
+    "admin": _STAFF | {"view_employee_full", "approve_actions", "view_audit_log", "manage_users", "manage_settings"},
 }
 
 # task type -> permission required

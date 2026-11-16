@@ -64,3 +64,20 @@ def runner(ctx, settings) -> HRRunner:
 @pytest.fixture(scope="session")
 def sample_docs(settings) -> dict[str, str]:
     return {p.name: str(p) for p in settings.sample_docs_dir.iterdir()}
+
+
+@pytest.fixture(autouse=True)
+def _isolate_external_services(monkeypatch, request):
+    """Tests must never use real credentials from .env or leak admin-page settings between tests."""
+    for var in ("RESEND_API_KEY", "HR360_EMAIL_REDIRECT_TO", "HR360_EMAIL_LIVE", "CLERK_SECRET_KEY",
+                "HR360_BOOTSTRAP_ADMIN_IDS", "LANGSMITH_TRACING", "LANGSMITH_API_KEY"):
+        monkeypatch.delenv(var, raising=False)
+    yield
+    if "settings" in request.fixturenames:  # reset DB-stored admin settings after tests that touched the session DB
+        from sqlalchemy import delete
+        from hr360.data.engine import make_engine
+        from hr360.data.schema import OPS_METADATA, app_settings
+        eng = make_engine(request.getfixturevalue("settings").ops_target)
+        OPS_METADATA.create_all(eng)
+        with eng.begin() as c:
+            c.execute(delete(app_settings))

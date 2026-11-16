@@ -27,7 +27,9 @@ def H(role, user="u1", emp=None, level=None):
 
 def test_requires_auth(client):
     assert client.get("/api/me").status_code == 401
-    assert client.get("/api/me", headers=H("hacker")).status_code == 403  # unknown role
+    # least privilege: unknown / missing role -> employee (never elevated)
+    me = client.get("/api/me", headers=H("hacker")).json()
+    assert me["portal_role"] == "employee" and me["permissions"] == ["policy_query"]
 
 
 def test_me_maps_portal_role_to_permissions(client):
@@ -129,8 +131,10 @@ def test_clerk_jwt_verification(monkeypatch):
     p = auth.get_principal(authorization=f"Bearer {tok()}")
     assert (p.portal_role, p.internal_role, p.employee_id) == ("pm", "pm", "EMP-1002")
     from fastapi import HTTPException
-    for bad in (tok(exp=int(time.time()) - 5), tok(iss="https://evil"), tok(azp="http://evil"), tok(metadata={}), tok(metadata={"role": "root"})):
+    for bad in (tok(exp=int(time.time()) - 5), tok(iss="https://evil"), tok(azp="http://evil")):
         with pytest.raises(HTTPException):
             auth.get_principal(authorization=f"Bearer {bad}")
+    for no_role in (tok(metadata={}), tok(metadata={"role": "root"}), tok(metadata="garbage")):
+        assert auth.get_principal(authorization=f"Bearer {no_role}").internal_role == "employee"
     with pytest.raises(HTTPException):
         auth.get_principal(authorization=None)
