@@ -9,6 +9,13 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+try:  # load local secrets/config from .env (real environment variables always win)
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env", override=False)
+except ImportError:  # python-dotenv is optional
+    pass
 TESSERACT_CANDIDATES = [
     r"C:\Program Files\Tesseract-OCR\tesseract.exe",
     r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
