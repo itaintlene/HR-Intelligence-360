@@ -1,4 +1,4 @@
-import { SignOutButton, useAuth } from "@clerk/clerk-react";
+import { SignOutButton, useAuth } from "@clerk/react";
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, Outlet } from "@tanstack/react-router";
 import { Loader2 } from "lucide-react";

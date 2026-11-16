@@ -1,4 +1,4 @@
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton } from "@clerk/react";
 import { Link, Outlet } from "@tanstack/react-router";
 import { Bell, CalendarDays, ClipboardCheck, History, LayoutDashboard, MessageSquare, ScrollText, Users, Workflow } from "lucide-react";
 import type { ComponentType } from "react";

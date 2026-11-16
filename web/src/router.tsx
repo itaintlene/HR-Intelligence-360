@@ -1,4 +1,4 @@
-import { SignIn } from "@clerk/clerk-react";
+import { SignIn } from "@clerk/react";
 import { createRootRoute, createRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { AuthGate, HomeRedirect, Require } from "@/pages/gate";
 import { Landing } from "@/pages/landing";
