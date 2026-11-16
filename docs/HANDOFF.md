@@ -2,7 +2,7 @@
 
 A prototype **HR assistant powered by AI agents**. It answers policy questions, checks HR records, automates onboarding, and tracks project work from daily stand-ups.
 
-> All data is **synthetic** (made up). No real employee information is used.
+> All data is **synthetic** (made up). No real employee info is used.
 
 | | |
 |---|---|
