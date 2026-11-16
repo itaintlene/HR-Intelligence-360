@@ -1,0 +1,156 @@
+# HR compliance rules - configuration, not code. Edit thresholds / lists here.
+# Rule `type` selects an implementation in hr360/rules/engine.py.
+# Findings are classified:
+#   confirmed_violation   - the data unambiguously breaks the rule
+#   potential_discrepancy - needs human verification (grace period, extraction uncertainty...)
+version: 1
+
+settings:
+  onboarding_grace_days: 7        # days after joining before a missing doc is a confirmed violation
+  expiry_warning_days: 30         # warn when a document expires within this window
+  extraction_min_confidence: 0.70 # extracted fields below this are "low confidence"
+  recent_joiner_days: 30
+  casual_leave_max_consecutive_days: 3   # Leave Policy section 3
+  task_due_days: {critical: 1, high: 3, medium: 7, low: 14}
+
+vocab:                            # used by the Document Intelligence Agent (spaCy PhraseMatcher)
+  departments: [Engineering, Human Resources, Finance, Sales, Marketing, Operations, Legal, IT]
+  designations: [Software Engineer, Senior Software Engineer, QA Engineer, DevOps Engineer, HR Executive,
+                 HR Business Partner, Recruiter, Financial Analyst, Accountant, Payroll Specialist,
+                 Sales Executive, Account Manager, Sales Manager, Marketing Specialist, Content Strategist,
+                 Brand Manager, Operations Analyst, Operations Manager, Office Administrator]
+
+# required extracted fields per document type (missing => flagged for review)
+required_fields_by_doc_type:
+  offer_letter: [employee_id, joining_date, designation, department]
+  id_proof: [employee_id, expiry_date]
+  address_proof: [employee_id]
+  tax_form: [employee_id]
+  nda: [employee_id]
+  bank_details: [employee_id]
+  education_certificate: [employee_id]
+  leave_request: [employee_id]
+  other: [employee_id]
+
+onboarding_checklist:             # used by the HR Workflow Agent
+  - {item: "Offer letter signed and filed", doc: offer_letter}
+  - {item: "Government ID proof collected", doc: id_proof}
+  - {item: "Address proof collected", doc: address_proof}
+  - {item: "Tax declaration form submitted", doc: tax_form}
+  - {item: "NDA signed", doc: nda}
+  - {item: "Bank details submitted", doc: bank_details}
+  - {item: "Education certificates verified", doc: education_certificate}
+  - {item: "IT equipment and accounts provisioned", doc: null}
+  - {item: "Manager introduction and 30-60-90 plan shared", doc: null}
+  - {item: "Policy orientation completed", doc: null}
+
+rules:
+  - id: R001_MANDATORY_FIELDS
+    type: mandatory_fields
+    severity: high
+    enabled: true
+    description: Mandatory employee master-data fields must be populated.
+    params:
+      fields: [employee_id, name, email, department, designation, joining_date, employment_status]
+
+  - id: R002_REQUIRED_DOCUMENTS
+    type: required_documents
+    enabled: true
+    description: All onboarding documents must be on file within the grace period.
+    params:
+      required: [offer_letter, id_proof, address_proof, tax_form, nda, bank_details, education_certificate]
+      overdue_severity: high
+      pending_severity: low
+
+  - id: R003_DOCUMENT_EXPIRY
+    type: document_expiry
+    enabled: true
+    description: Documents with an expiry date must not be expired.
+    params:
+      applies_to: [id_proof, work_permit]
+      expired_severity: high
+      expiring_severity: medium
+
+  - id: R004_PROBATION_DATES
+    type: date_order
+    severity: medium
+    enabled: true
+    description: Probation end date cannot precede the joining date.
+    params: {earlier: joining_date, later: probation_end}
+
+  - id: R005_FUTURE_JOINING_ACTIVE
+    type: future_joining_active
+    severity: high
+    enabled: true
+    description: A future joining date is inconsistent with an Active/Probation status.
+    params: {statuses: [Active, Probation]}
+
+  - id: R006_MANAGER_REFERENCE
+    type: reference_integrity
+    severity: medium
+    enabled: true
+    description: manager_id must reference an existing employee other than the employee themself.
+    params: {field: manager_id}
+
+  - id: R007_DUPLICATE_EMAIL
+    type: duplicate
+    severity: high
+    enabled: true
+    description: Employee email addresses must be unique.
+    params: {field: email}
+
+  - id: R008_VALID_VALUES
+    type: valid_values
+    severity: medium
+    enabled: true
+    description: Controlled-vocabulary fields must hold allowed values.
+    params:
+      checks:
+        employment_status: [Active, Probation, Notice Period, On Leave, Terminated]
+        salary_band: [B1, B2, B3, B4, B5]
+
+  - id: R009_OFFER_LETTER_DATE
+    type: doc_after_joining
+    severity: low
+    enabled: true
+    description: Offer letter dated after the joining date is suspicious and needs verification.
+    params: {doc_type: offer_letter}
+
+  # ---- rules for documents uploaded in Workflow B (checked against the DB) ----
+  - id: R101_EXTRACTED_UNKNOWN_EMPLOYEE
+    type: extracted_unknown_employee
+    severity: medium
+    enabled: true
+    description: Uploaded document references an employee that is not in the HR database.
+
+  - id: R102_EXTRACTED_MANDATORY
+    type: extracted_mandatory
+    severity: medium
+    enabled: true
+    description: Key fields could not be extracted from the uploaded document.
+    params: {fields: [employee_id, document_type]}
+
+  - id: R103_EXTRACTED_MISMATCH
+    type: extracted_mismatch
+    severity: medium
+    enabled: true
+    description: Values in the uploaded document differ from the HR database record.
+    params: {fields: [department, designation, joining_date]}
+
+  - id: R104_EXTRACTED_LOW_CONFIDENCE
+    type: extracted_low_confidence
+    severity: low
+    enabled: true
+    description: Extraction confidence is below threshold; manual review recommended.
+
+  - id: R105_EXTRACTED_EXPIRED
+    type: extracted_expired
+    severity: high
+    enabled: true
+    description: Uploaded document is already expired.
+
+  - id: R106_INJECTION_SUSPECTED
+    type: extracted_injection
+    severity: high
+    enabled: true
+    description: Uploaded document contains text that attempts to instruct an AI system.

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+logs/
+reports/
+data/*.db
+data/index/
+data/uploads/
+data/outbox.jsonl
