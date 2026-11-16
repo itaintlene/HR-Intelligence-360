@@ -27,7 +27,17 @@ py -3.13 -m venv .venv                       # Python 3.13 recommended (3.14 lac
 .\.venv\Scripts\python scripts\export_graph.py       # regenerate docs/workflow_graph.{mmd,png}
 ```
 
-## What to try in the UI
+## Web app (React + TanStack + Tailwind/shadcn + Clerk) - recommended UI
+
+Three login types (Employee, Project Manager, HR) via Clerk; the FastAPI backend verifies the Clerk JWT and enforces RBAC.
+Setup, role assignment and the permission matrix: **[docs/CLERK_SETUP.md](docs/CLERK_SETUP.md)**.
+
+```powershell
+.\.venv\Scripts\uvicorn hr360.api.main:app --port 8000          # API (needs CLERK_ISSUER, see docs)
+cd web; copy .env.example .env.local; npm install; npm run dev   # UI  http://localhost:5173
+```
+
+## What to try in the (Streamlit) UI
 
 | Role | Try | Shows |
 |---|---|---|
