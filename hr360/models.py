@@ -9,7 +9,8 @@ Severity = Literal["low", "medium", "high", "critical"]
 Classification = Literal["confirmed_violation", "potential_discrepancy"]
 SEVERITY_ORDER = {"low": 0, "medium": 1, "high": 2, "critical": 3}
 
-TaskType = Literal["policy_question", "document_audit", "onboarding", "audit_summary", "leave_summary", "unsupported"]
+TaskType = Literal["policy_question", "document_audit", "onboarding", "audit_summary", "leave_summary", "project_status", "person_record",
+                   "unsupported"]
 
 
 class Finding(BaseModel):

@@ -21,7 +21,7 @@ from hr360.security.sanitize import wrap_untrusted
 
 log = logging.getLogger("hr360.supervisor")
 
-AGENT_NODES = ("document_intelligence", "policy", "audit", "workflow", "report", "approval")
+AGENT_NODES = ("document_intelligence", "policy", "audit", "workflow", "report", "approval", "work_insights")
 ONBOARDING_POLICY_QUERY = "What documents must a new employee submit during onboarding and what is the deadline?"
 
 # predefined workflows (A-D plus leave/pending-task summary). Inner lists run in PARALLEL.
@@ -31,11 +31,17 @@ WORKFLOWS: dict[str, list[list[str]]] = {
     "onboarding": [["document_intelligence", "policy"], ["audit"], ["workflow"], ["report"], ["approval"]],  # C
     "audit_summary": [["audit"], ["workflow"], ["report"]],                                  # D
     "leave_summary": [["workflow"]],
+    "project_status": [["work_insights"]],
+    "person_record": [["work_insights"]],
     "unsupported": [],
 }
 EMP_ID_RX = re.compile(r"\bEMP[-\s_]?(\d{3,6})\b", re.IGNORECASE)
 
-_FORBIDDEN = re.compile(r"\b(fire|terminate|hire|rank|payroll|salary|promot\w+|reject candidate)\b", re.IGNORECASE)
+_FORBIDDEN = re.compile(r"\b(fire|terminate|hire|rank|payroll|salary|promot\w+|reject candidate|worst|best performer|top performer|"
+                        r"bottom \d+|leaderboard|rate (the |all |my )?(employees|people|team)|performance (score|rating|ranking))\b", re.IGNORECASE)
+_RANKING = re.compile(r"(worst|best performer|top performer|bottom \d+|leaderboard|rate (the |all |my )?(employees|people|team)|"
+                     r"performance (score|rating|ranking)|rank(ing)? (the |all |my )?(employees|people|team|staff))", re.IGNORECASE)
+PROJ_ID_RX = re.compile(r"\bPRJ[-\s_]?(\d{2,5})\b", re.IGNORECASE)
 
 
 class SupervisorAgent:
@@ -55,13 +61,29 @@ class SupervisorAgent:
         return seen
 
     @staticmethod
+    def extract_project_ids(text: str) -> list[str]:
+        seen: list[str] = []
+        for m in PROJ_ID_RX.finditer(text or ""):
+            pid = f"PRJ-{m.group(1)}"
+            if pid not in seen:
+                seen.append(pid)
+        return seen
+
+    @staticmethod
     def classify_by_rules(query: str, has_files: bool) -> TaskClassification:
         q = query.lower()
+        if _RANKING.search(q):
+            return TaskClassification(task_type="unsupported", rationale="ranking / scoring employees is not supported")
         if _FORBIDDEN.search(q) and not re.search(r"polic|leave|how|what", q):
             return TaskClassification(task_type="unsupported", rationale="consequential employment decision")
         if any(k in q for k in ("onboard", "new joiner", "new hire", "new employee", "checklist", "welcome")) and \
                 not q.rstrip().endswith("?"):
             return TaskClassification(task_type="onboarding", rationale="onboarding keywords")
+        if any(k in q for k in ("work record", "contribution", "activity of", "daily updates of", "work history", "evidence for", "stand-up history"))                 and EMP_ID_RX.search(q):
+            return TaskClassification(task_type="person_record", rationale="employee work-record keywords")
+        if any(k in q for k in ("project status", "project progress", "status of project", "blocker", "running slow", "behind schedule", "stand-up",
+                                "standup", "stand up", "how is project", "project health")) or PROJ_ID_RX.search(q):
+            return TaskClassification(task_type="project_status", rationale="project / stand-up keywords")
         if any(k in q for k in ("pending leave", "leave request", "leave summary", "pending task", "leave applications")):
             return TaskClassification(task_type="leave_summary", rationale="leave/task keywords")
         if has_files:
@@ -98,7 +120,7 @@ class SupervisorAgent:
         task = cls.task_type
         ids = self.extract_employee_ids(query)
         out: dict = {"task_type": task, "task_rationale": cls.rationale, "employee_ids": ids,
-                     "stage_idx": 0, "step_count": 0, "current_stage": [], "approval_status": "not_required",
+                     "project_ids": self.extract_project_ids(query), "stage_idx": 0, "step_count": 0, "current_stage": [], "approval_status": "not_required",
                      "agent_execution_status": {"supervisor": {"status": "completed", "task_type": task}}}
         allowed, why = authorize_task(state.get("user_role", "employee"), task)
         if not allowed:
@@ -169,6 +191,10 @@ class SupervisorAgent:
             resp["workflow_summary"] = state["workflow_summary"]
             if not message or task in ("leave_summary",):
                 message = state["workflow_summary"]
+        if state.get("work_insights"):
+            wi = state["work_insights"]
+            resp["work_insights"] = {"kind": wi["kind"], "narrative": wi.get("narrative")}
+            message = message or wi.get("narrative", "")
         resp["recommendations_count"] = len(state.get("workflow_recommendations") or [])
         resp["email_drafts_count"] = len(state.get("generated_email_drafts") or [])
         if state.get("report_paths"):

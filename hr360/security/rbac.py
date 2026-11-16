@@ -5,14 +5,16 @@ from dataclasses import dataclass
 
 ROLES = ("employee", "pm", "hr_staff", "hr_manager", "admin")
 
-_STAFF = {"policy_query", "document_upload", "run_audit", "run_workflow", "view_employee_masked", "view_team_leave"}
+_ALL = {"policy_query", "submit_standup", "view_own_work"}
+_STAFF = _ALL | {"document_upload", "run_audit", "run_workflow", "view_employee_masked", "view_team_leave",
+                 "view_project_status", "view_person_record", "review_evidence"}
 PERMISSIONS: dict[str, set[str]] = {
-    "employee": {"policy_query"},
-    # project manager: policy Q&A + leave summary scoped to their direct reports (never approves HR actions)
-    "pm": {"policy_query", "view_team_leave"},
+    "employee": set(_ALL),
+    # project manager: policy Q&A, leave + project status scoped to their own team/projects (never approves HR actions)
+    "pm": _ALL | {"view_team_leave", "view_project_status", "review_evidence"},
     "hr_staff": set(_STAFF),
-    "hr_manager": _STAFF | {"view_employee_full", "approve_actions"},
-    "admin": _STAFF | {"view_employee_full", "approve_actions", "view_audit_log", "manage_users", "manage_settings"},
+    "hr_manager": _STAFF | {"view_employee_full", "approve_actions", "manage_projects"},
+    "admin": _STAFF | {"view_employee_full", "approve_actions", "view_audit_log", "manage_users", "manage_settings", "manage_projects"},
 }
 
 # task type -> permission required
@@ -22,6 +24,8 @@ TASK_PERMISSION = {
     "onboarding": "run_workflow",
     "audit_summary": "run_audit",
     "leave_summary": "view_team_leave",
+    "project_status": "view_project_status",
+    "person_record": "view_person_record",
 }
 
 

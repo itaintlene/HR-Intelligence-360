@@ -65,3 +65,5 @@ class HRGraphState(TypedDict, total=False):
     current_stage: list[str]
     step_count: int
     approval_decision: dict
+    project_ids: Annotated[list[str], union_list]
+    work_insights: dict
