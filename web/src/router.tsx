@@ -7,6 +7,7 @@ import {
 } from "@/pages/pages";
 import { useMe } from "@/lib/me";
 import { AdminPage } from "@/pages/admin";
+import { MyWorkPage, PeoplePage, ProjectsPage, StandupPage } from "@/pages/work";
 
 const rootRoute = createRootRoute({ component: () => <Outlet /> });
 
@@ -48,11 +49,23 @@ const auditLog = createRoute({ getParentRoute: () => app, path: "/audit-log", co
 // Admin console: intentionally NOT linked from the sidebar - reached by URL only, admins only (enforced server-side too).
 const admin = createRoute({ getParentRoute: () => rootRoute, path: "/admin", component: AdminPage });
 
+const standup = createRoute({ getParentRoute: () => app, path: "/standup", component: () => <Require perm="submit_standup"><StandupPage /></Require> });
+const myWork = createRoute({ getParentRoute: () => app, path: "/my-work", component: () => <Require perm="view_own_work"><MyWorkPage /></Require> });
+const projects = createRoute({
+  getParentRoute: () => app,
+  path: "/projects",
+  component: () => {
+    const me = useMe();
+    return <Require perm="view_project_status"><ProjectsPage me={me} /></Require>;
+  },
+});
+const people = createRoute({ getParentRoute: () => app, path: "/people", component: () => <Require perm="view_person_record"><PeoplePage /></Require> });
+
 const routeTree = rootRoute.addChildren([
   landing,
   signIn,
   admin,
-  app.addChildren([appIndex, ask, requests, teamLeave, dashboard, assistant, approvals, employees, auditLog]),
+  app.addChildren([appIndex, standup, myWork, projects, people, ask, requests, teamLeave, dashboard, assistant, approvals, employees, auditLog]),
 ]);
 
 export const router = createRouter({ routeTree });

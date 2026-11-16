@@ -11,4 +11,4 @@ export function useMe(): Me {
 }
 
 export const PORTAL_KEY = "hr360.portal";
-export const HOME: Record<string, string> = { employee: "/app/ask", pm: "/app/ask", hr: "/app/dashboard" };
+export const HOME: Record<string, string> = { employee: "/app/standup", pm: "/app/projects", hr: "/app/dashboard" };

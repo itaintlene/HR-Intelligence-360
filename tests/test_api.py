@@ -29,11 +29,11 @@ def test_requires_auth(client):
     assert client.get("/api/me").status_code == 401
     # least privilege: unknown / missing role -> employee (never elevated)
     me = client.get("/api/me", headers=H("hacker")).json()
-    assert me["portal_role"] == "employee" and me["permissions"] == ["policy_query"]
+    assert me["portal_role"] == "employee" and me["permissions"] == ["policy_query", "submit_standup", "view_own_work"]
 
 
 def test_me_maps_portal_role_to_permissions(client):
-    assert client.get("/api/me", headers=H("employee")).json()["permissions"] == ["policy_query"]
+    assert client.get("/api/me", headers=H("employee")).json()["permissions"] == ["policy_query", "submit_standup", "view_own_work"]
     assert "approve_actions" in client.get("/api/me", headers=H("hr", level="manager")).json()["permissions"]
     assert "approve_actions" not in client.get("/api/me", headers=H("hr")).json()["permissions"]
     pm = client.get("/api/me", headers=H("pm", emp="EMP-1002")).json()

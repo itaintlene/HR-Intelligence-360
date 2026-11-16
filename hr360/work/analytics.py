@@ -22,6 +22,22 @@ DISCLAIMER = ("These are signals for human review, not a performance rating. No 
 _STOP = set("the a an and or of to in on for with is are was were be been it this that i we my our will today yesterday working worked work".split())
 
 
+def clean(obj):
+    """Make pandas/numpy output JSON- and msgpack-safe: NaN/NaT -> None, numpy scalars -> Python."""
+    if isinstance(obj, dict):
+        return {k: clean(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [clean(v) for v in obj]
+    if hasattr(obj, "item") and not isinstance(obj, (str, bytes)):
+        try:
+            obj = obj.item()
+        except (ValueError, AttributeError):
+            pass
+    if isinstance(obj, float) and obj != obj:
+        return None
+    return None if obj is pd.NaT else obj
+
+
 def _d(x) -> date:
     return x if isinstance(x, date) else date.fromisoformat(str(x)[:10])
 
@@ -176,13 +192,13 @@ def project_status(repo, leaves: pd.DataFrame, project_id: str, as_of: date, win
     prev_from = (days[0] - timedelta(days=window + 2)).isoformat()
     prev = gh_all[(gh_all["event_ts"] >= prev_from) & (gh_all["event_ts"] < days[0].isoformat())] if not gh_all.empty else gh_all
     cur = gh_all[gh_all["event_ts"] >= days[0].isoformat()] if not gh_all.empty else gh_all
-    return {"project": {k: proj[k] for k in ("project_id", "name", "manager_employee_id", "start_date", "target_date", "status", "repo")},
+    return clean({"project": {k: proj[k] for k in ("project_id", "name", "manager_employee_id", "start_date", "target_date", "status", "repo")},
             "progress": {"pct_complete": pct, "expected_pct": expected, "delta": delta, "schedule_status": schedule},
             "milestones": [{**r, "overdue": bool(r["status"] != "done" and r["due_date"] < as_of.isoformat())} for r in ms.to_dict("records")],
             "blockers": sorted(blockers, key=lambda b: -b["age_days"]),
             "members": sorted(member_rows, key=lambda m: m["employee_id"]),   # alphabetical on purpose: never ordered by "performance"
             "flags": flags, "github": {"current": _github_counts(cur), "previous": _github_counts(prev)},
-            "window": {"working_days": window, "from": days[0].isoformat(), "to": days[-1].isoformat()}, "disclaimer": DISCLAIMER}
+            "window": {"working_days": window, "from": days[0].isoformat(), "to": days[-1].isoformat()}, "disclaimer": DISCLAIMER})
 
 
 # ------------------------------------------------------------------------------------ person
@@ -225,5 +241,5 @@ def person_record(repo, leaves: pd.DataFrame, employee_id: str, as_of: date, win
                                     "note": "Line counts are raw context only - not a measure of impact and not used in any rating.",
                                     "recent": gh.sort_values("event_ts", ascending=False).head(15)[["event_type", "title", "url", "event_ts", "repo"]].to_dict("records")},
                          "evidence_count": int(len(evs)), "evidence_unreviewed": unreviewed, "timeline": timeline, "flags": flags})
-    return {"employee_id": employee_id, "window": {"working_days": window, "from": since, "to": days[-1].isoformat()}, "projects": projects,
-            "flags": [f for p in projects for f in p["flags"]], "disclaimer": DISCLAIMER}
+    return clean({"employee_id": employee_id, "window": {"working_days": window, "from": since, "to": days[-1].isoformat()}, "projects": projects,
+                  "flags": [f for p in projects for f in p["flags"]], "disclaimer": DISCLAIMER})

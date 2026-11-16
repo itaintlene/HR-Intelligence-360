@@ -39,8 +39,8 @@ EMP_ID_RX = re.compile(r"\bEMP[-\s_]?(\d{3,6})\b", re.IGNORECASE)
 
 _FORBIDDEN = re.compile(r"\b(fire|terminate|hire|rank|payroll|salary|promot\w+|reject candidate|worst|best performer|top performer|"
                         r"bottom \d+|leaderboard|rate (the |all |my )?(employees|people|team)|performance (score|rating|ranking))\b", re.IGNORECASE)
-_RANKING = re.compile(r"(worst|best performer|top performer|bottom \d+|leaderboard|rate (the |all |my )?(employees|people|team)|"
-                     r"performance (score|rating|ranking)|rank(ing)? (the |all |my )?(employees|people|team|staff))", re.IGNORECASE)
+_RANKING = re.compile(r"\b(worst|best performer|top performer|bottom \d+|leaderboard|rate (the |all |my )?(employees|people|team)|"
+                     r"performance (score|rating|ranking)|rank(ing)? (the |all |my )?(employees|people|team|staff))\b", re.IGNORECASE)
 PROJ_ID_RX = re.compile(r"\bPRJ[-\s_]?(\d{2,5})\b", re.IGNORECASE)
 
 

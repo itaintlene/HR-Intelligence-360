@@ -185,3 +185,7 @@ def report(request_id: str, kind: str, p: Principal = Depends(get_principal), ru
 from hr360.api.admin import router as admin_router  # noqa: E402
 
 app.include_router(admin_router)
+
+from hr360.api.work import router as work_router  # noqa: E402
+
+app.include_router(work_router)

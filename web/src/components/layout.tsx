@@ -1,6 +1,6 @@
 import { UserButton } from "@clerk/react";
 import { Link, Outlet } from "@tanstack/react-router";
-import { Bell, CalendarDays, ClipboardCheck, History, LayoutDashboard, MessageSquare, ScrollText, Users, Workflow } from "lucide-react";
+import { Bell, CalendarDays, ClipboardCheck, ClipboardList, FolderKanban, History, LayoutDashboard, MessageSquare, ScrollText, UserSearch, Users, Workflow } from "lucide-react";
 import type { ComponentType } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { Me } from "@/lib/types";
@@ -14,16 +14,23 @@ interface NavItem {
 
 const NAV: Record<string, NavItem[]> = {
   employee: [
+    { to: "/app/standup", label: "Daily stand-up", icon: ClipboardList },
+    { to: "/app/my-work", label: "My work", icon: FolderKanban },
     { to: "/app/ask", label: "Ask HR", icon: MessageSquare },
     { to: "/app/requests", label: "My questions", icon: History },
   ],
   pm: [
+    { to: "/app/projects", label: "Projects", icon: FolderKanban },
+    { to: "/app/standup", label: "Daily stand-up", icon: ClipboardList },
+    { to: "/app/my-work", label: "My work", icon: History },
     { to: "/app/ask", label: "Ask HR", icon: MessageSquare },
     { to: "/app/team-leave", label: "Team leave", icon: CalendarDays },
     { to: "/app/requests", label: "My requests", icon: History },
   ],
   hr: [
     { to: "/app/dashboard", label: "Audit dashboard", icon: LayoutDashboard },
+    { to: "/app/projects", label: "Projects", icon: FolderKanban },
+    { to: "/app/people", label: "Work records", icon: UserSearch },
     { to: "/app/assistant", label: "Workflows", icon: Workflow },
     { to: "/app/approvals", label: "Approvals", icon: ClipboardCheck },
     { to: "/app/employees", label: "Employees", icon: Users },

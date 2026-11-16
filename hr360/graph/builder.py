@@ -15,6 +15,7 @@ from hr360.agents.base import AgentContext
 from hr360.agents.document_agent import DocumentIntelligenceAgent
 from hr360.agents.policy_agent import HRPolicyAgent
 from hr360.agents.supervisor import AGENT_NODES, SupervisorAgent
+from hr360.agents.work_agent import WorkInsightsAgent
 from hr360.agents.workflow_agent import HRWorkflowAgent
 from hr360.graph.nodes import guarded, make_approval_node, make_report_node
 from hr360.graph.state import HRGraphState
@@ -54,6 +55,7 @@ def build_graph(ctx: AgentContext, checkpointer=None):
     g.add_node("policy", guarded("policy", HRPolicyAgent(ctx).run, ctx))
     g.add_node("audit", guarded("audit", HRAuditAgent(ctx).run, ctx))
     g.add_node("workflow", guarded("workflow", HRWorkflowAgent(ctx).run, ctx))
+    g.add_node("work_insights", guarded("work_insights", WorkInsightsAgent(ctx).run, ctx))
     g.add_node("report", guarded("report", make_report_node(ctx), ctx))
     g.add_node("approval", make_approval_node(ctx))   # not wrapped: must propagate the interrupt
     g.add_node("finalize", sup.finalize_node)
