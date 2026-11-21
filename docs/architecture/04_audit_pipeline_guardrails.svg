@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker><marker id="ahp" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#db2777"/></marker><filter id="sh" x="-5%" y="-5%" width="110%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.13"/></filter></defs>
+<rect width="1800" height="1100" fill="#f8fafc"/>
+<text x="40" y="48" font-size="28" font-weight="700" fill="#1e293b">Compliance Audit Pipeline &amp; Guardrails</text>
+<text x="40" y="74" font-size="15" fill="#475569">How a document becomes a trustworthy finding: code decides, humans confirm, the LLM only narrates</text>
+<rect x="60" y="110" width="290" height="125" rx="10" fill="#dbeafe" stroke="#2563eb" stroke-width="1.6" filter="url(#sh)"/>
+<text x="205.0" y="154.0" font-size="16" fill="#1e293b" font-weight="700" text-anchor="middle">1 · Upload &amp; classify</text>
+<text x="205.0" y="175.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">PDF · DOCX · PNG scans</text>
+<text x="205.0" y="192.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">document type guessed</text>
+<text x="205.0" y="209.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">bad file never kills batch</text>
+<rect x="410" y="110" width="290" height="125" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="1.6" filter="url(#sh)"/>
+<text x="555.0" y="154.0" font-size="16" fill="#1e293b" font-weight="700" text-anchor="middle">2 · Sanitize</text>
+<text x="555.0" y="175.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">strip prompt-injection lines</text>
+<text x="555.0" y="192.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">mask ID numbers</text>
+<text x="555.0" y="209.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">text treated as data</text>
+<rect x="760" y="110" width="290" height="125" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="905.0" y="154.0" font-size="16" fill="#1e293b" font-weight="700" text-anchor="middle">3 · Extract</text>
+<text x="905.0" y="175.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">PyMuPDF / python-docx</text>
+<text x="905.0" y="192.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">Tesseract OCR for scans</text>
+<text x="905.0" y="209.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">spaCy + regex → Pydantic</text>
+<rect x="1110" y="110" width="290" height="125" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1255.0" y="154.0" font-size="16" fill="#1e293b" font-weight="700" text-anchor="middle">4 · Validate fields</text>
+<text x="1255.0" y="175.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">per-field confidence</text>
+<text x="1255.0" y="192.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">missing / low-confidence</text>
+<text x="1255.0" y="209.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">flagged for review (&lt;0.70)</text>
+<rect x="1460" y="110" width="290" height="125" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1605.0" y="154.0" font-size="16" fill="#1e293b" font-weight="700" text-anchor="middle">5 · Rules engine</text>
+<text x="1605.0" y="175.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">YAML rule instances</text>
+<text x="1605.0" y="192.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">Python rule types</text>
+<text x="1605.0" y="209.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">vs. employee master data</text>
+<path d="M350,172 L410,172" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<path d="M700,172 L760,172" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<path d="M1050,172 L1110,172" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<path d="M1400,172 L1460,172" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="60" y="100" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">EXTRACTION  (no LLM involved — HR documents never reach a model)</text>
+<rect x="1445" y="262" width="320" height="235" rx="12" fill="none" stroke="#94a3b8" stroke-dasharray="5 4"/>
+<text x="1460" y="282" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">DECISION  (deterministic code)</text>
+<rect x="1460" y="295" width="290" height="75" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1605.0" y="322.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">confirmed_violation</text>
+<text x="1605.0" y="343.0" font-size="11.5" fill="#475569" font-weight="400" text-anchor="middle">data unambiguously breaks a rule</text>
+<text x="1605.0" y="359.5" font-size="11.5" fill="#475569" font-weight="400" text-anchor="middle">e.g. expired ID, missing doc past grace</text>
+<rect x="1460" y="400" width="290" height="75" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1605.0" y="427.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">potential_discrepancy</text>
+<text x="1605.0" y="448.0" font-size="11.5" fill="#475569" font-weight="400" text-anchor="middle">needs human verification</text>
+<text x="1605.0" y="464.5" font-size="11.5" fill="#475569" font-weight="400" text-anchor="middle">grace period · extraction uncertainty</text>
+<path d="M1605,235 L1605,262" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="1110" y="340" width="290" height="95" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1255.0" y="368.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">6 · Finding validator</text>
+<text x="1255.0" y="389.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">evidence attached to every finding</text>
+<text x="1255.0" y="406.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">rule code · doc id · field values</text>
+<text x="1255.0" y="423.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">findings dedup by finding_id</text>
+<path d="M1460,332 L1400,372" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<path d="M1460,437 L1400,402" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="760" y="340" width="290" height="95" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.6" filter="url(#sh)"/>
+<text x="905.0" y="368.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">7 · Narrative (optional LLM)</text>
+<text x="905.0" y="389.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">sees IDs &amp; rule codes only</text>
+<text x="905.0" y="406.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">cannot alter any finding</text>
+<text x="905.0" y="423.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">template text if no LLM</text>
+<path d="M1110,387 L1050,387" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="410" y="340" width="290" height="95" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="555.0" y="368.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">8 · Report</text>
+<text x="555.0" y="389.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">ReportLab PDF + CSV</text>
+<text x="555.0" y="406.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">dashboard &amp; follow-up tasks</text>
+<text x="555.0" y="423.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">recorded in audit_log</text>
+<path d="M760,387 L700,387" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="60" y="340" width="290" height="95" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="205.0" y="368.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">9 · Human review</text>
+<text x="205.0" y="389.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">HR sees evidence, decides</text>
+<text x="205.0" y="406.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">approval gate for any send</text>
+<text x="205.0" y="423.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">authors can’t review own proof</text>
+<path d="M410,387 L350,387" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<text x="60" y="330" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">OUTPUT</text>
+<rect x="40" y="520" width="1720" height="64" rx="12" fill="#ede9fe" stroke="#7c3aed"/>
+<text x="900" y="548" font-size="16" fill="#4c1d95" font-weight="700" text-anchor="middle">Design rule: the LLM never decides compliance, never sends email, never approves — it can only explain what code already found.</text>
+<text x="900" y="570" font-size="13" fill="#5b21b6" font-weight="400" text-anchor="middle">If the model is unavailable the whole system still works through deterministic fallbacks.</text>
+<text x="40" y="626" font-size="20" fill="#1e293b" font-weight="700" text-anchor="start">Guardrails that run through every workflow</text>
+<rect x="40" y="650" width="560" height="180" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="62" y="688" font-size="18" fill="#1e293b" font-weight="700" text-anchor="start">Compliance is code</text>
+<text x="62" y="724" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">YAML-configured rules, Python rule types.</text>
+<text x="62" y="750" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">Thresholds (grace days, expiry window,</text>
+<text x="62" y="776" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">min confidence) editable without code.</text>
+<rect x="620" y="650" width="560" height="180" rx="12" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.5"/>
+<text x="642" y="688" font-size="18" fill="#1e293b" font-weight="700" text-anchor="start">Least-privilege RBAC</text>
+<text x="642" y="724" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">employee &lt; hr_staff &lt; hr_manager &lt; admin.</text>
+<text x="642" y="750" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">Employees see only their own data; PMs see</text>
+<text x="642" y="776" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">only managed projects; denials are logged.</text>
+<rect x="1200" y="650" width="560" height="180" rx="12" fill="#fce7f3" stroke="#db2777" stroke-width="1.5"/>
+<text x="1222" y="688" font-size="18" fill="#1e293b" font-weight="700" text-anchor="start">Human final say</text>
+<text x="1222" y="724" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">Approval node uses interrupt(); only</text>
+<text x="1222" y="750" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">hr_manager / admin decisions count.</text>
+<text x="1222" y="776" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">No hiring, firing, ranking or payroll automation.</text>
+<rect x="40" y="850" width="560" height="180" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="62" y="888" font-size="18" fill="#1e293b" font-weight="700" text-anchor="start">Prompt-injection defence</text>
+<text x="62" y="924" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">Suspicious lines stripped from documents;</text>
+<text x="62" y="950" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">proof files wrapped as untrusted data;</text>
+<text x="62" y="976" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">LLM summaries can trigger no action.</text>
+<rect x="620" y="850" width="560" height="180" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="642" y="888" font-size="18" fill="#1e293b" font-weight="700" text-anchor="start">Privacy by design</text>
+<text x="642" y="924" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">State holds IDs and masked values, not PII.</text>
+<text x="642" y="950" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">Drafts use {first_name} placeholders resolved</text>
+<text x="642" y="976" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">only when an approved email is queued.</text>
+<rect x="1200" y="850" width="560" height="180" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+<text x="1222" y="888" font-size="18" fill="#1e293b" font-weight="700" text-anchor="start">Observable &amp; degradable</text>
+<text x="1222" y="924" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">audit_log, logs/hr360.log, optional LangSmith.</text>
+<text x="1222" y="950" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">No LLM → keyword routing, extractive answers,</text>
+<text x="1222" y="976" font-size="13.5" fill="#475569" font-weight="400" text-anchor="start">template summaries. One failure → partial result.</text>
+</svg>

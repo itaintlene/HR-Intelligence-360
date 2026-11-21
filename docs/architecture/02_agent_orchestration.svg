@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1080" viewBox="0 0 1800 1080" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker><marker id="ahp" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#db2777"/></marker><filter id="sh" x="-5%" y="-5%" width="110%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.13"/></filter></defs>
+<rect width="1800" height="1080" fill="#f8fafc"/>
+<text x="40" y="48" font-size="28" font-weight="700" fill="#1e293b">Multi-Agent Orchestration — LangGraph Hub-and-Spoke</text>
+<text x="40" y="74" font-size="15" fill="#475569">Every agent returns to one dispatch hub; no agent talks to another agent, and the plan is a constant table</text>
+<rect x="40" y="112" width="90" height="36" rx="18.0" fill="#334155"/>
+<text x="85.0" y="135.0" font-size="14" fill="#fff" font-weight="700" text-anchor="middle">START</text>
+<path d="M130,130 L190,130" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="190" y="80" width="380" height="100" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6" filter="url(#sh)"/>
+<text x="380.0" y="111.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Supervisor</text>
+<text x="380.0" y="132.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">classify intent (LLM, or keyword fallback)</text>
+<text x="380.0" y="149.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">RBAC check → pick a fixed plan</text>
+<text x="380.0" y="166.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">does no domain work itself</text>
+<path d="M570,130 L700,130" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576.2" y="109" width="117.6" height="19" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="635" y="123" font-size="11.5" fill="#334155" font-weight="600" text-anchor="middle">task_type + plan</text>
+<rect x="700" y="80" width="400" height="100" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6" filter="url(#sh)"/>
+<text x="900.0" y="111.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Dispatch Hub</text>
+<text x="900.0" y="132.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">next stage from the plan</text>
+<text x="900.0" y="149.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">node-name whitelist · max_steps limit</text>
+<text x="900.0" y="166.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">recursion_limit as second guard</text>
+<path d="M1100,130 L1300,130" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="1108.2" y="103" width="183.6" height="19" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1200" y="117" font-size="11.5" fill="#334155" font-weight="600" text-anchor="middle">plan done / failed / limit</text>
+<rect x="1300" y="80" width="300" height="100" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1450.0" y="119.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1450.0" y="140.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">structured final_response</text>
+<text x="1450.0" y="157.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">ok · partial · refused</text>
+<path d="M1600,130 L1690,130" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="1690" y="112" width="80" height="36" rx="18.0" fill="#334155"/>
+<text x="1730.0" y="135.0" font-size="14" fill="#fff" font-weight="700" text-anchor="middle">END</text>
+<path d="M210,240 L1620,240" stroke="#7c3aed" stroke-width="1.6" stroke-dasharray="6 5" fill="none"/>
+<path d="M960,180 L960,240" fill="none" stroke="#7c3aed" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<rect x="981.2" y="202" width="117.6" height="19" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="1040" y="216" font-size="11.5" fill="#7c3aed" font-weight="600" text-anchor="middle">conditional edge</text>
+<path d="M840,285 L840,180" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="654.8" y="202" width="170.39999999999998" height="19" rx="9" fill="#f8fafc" stroke="#e2e8f0"/>
+<text x="740" y="216" font-size="11.5" fill="#334155" font-weight="600" text-anchor="middle">result merged into state</text>
+<rect x="80" y="330" width="215" height="190" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="187.5" y="389.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">HR Policy</text>
+<text x="187.5" y="410.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">FAISS + embeddings</text>
+<text x="187.5" y="427.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">answers only from</text>
+<text x="187.5" y="444.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">retrieved passages</text>
+<text x="187.5" y="461.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">[S#] citations checked</text>
+<text x="187.5" y="478.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">refuses if unsupported</text>
+<path d="M210,240 L210,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M165,330 L165,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<rect x="315" y="330" width="215" height="190" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="422.5" y="389.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Document Intelligence</text>
+<text x="422.5" y="410.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">PyMuPDF · python-docx</text>
+<text x="422.5" y="427.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">Tesseract OCR · spaCy</text>
+<text x="422.5" y="444.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">Pydantic fields +</text>
+<text x="422.5" y="461.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">confidence scores</text>
+<text x="422.5" y="478.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">injection lines stripped</text>
+<path d="M445,240 L445,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M400,330 L400,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<rect x="550" y="330" width="215" height="190" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="657.5" y="389.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">HR Audit</text>
+<text x="657.5" y="410.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">pandas + YAML rules</text>
+<text x="657.5" y="427.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">CODE decides compliance</text>
+<text x="657.5" y="444.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">confirmed vs potential</text>
+<text x="657.5" y="461.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">evidence on each finding</text>
+<text x="657.5" y="478.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">LLM only narrates</text>
+<path d="M680,240 L680,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M635,330 L635,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<rect x="785" y="330" width="215" height="190" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="892.5" y="389.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">HR Workflow</text>
+<text x="892.5" y="410.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">onboarding checklists</text>
+<text x="892.5" y="427.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">email drafts (placeholders)</text>
+<text x="892.5" y="444.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">leave summaries</text>
+<text x="892.5" y="461.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">cannot send, approve</text>
+<text x="892.5" y="478.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">or decide anything</text>
+<path d="M915,240 L915,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M870,330 L870,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<rect x="1020" y="330" width="215" height="190" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1127.5" y="389.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Work Insights</text>
+<text x="1127.5" y="410.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">stand-ups · milestones</text>
+<text x="1127.5" y="427.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">blockers · GitHub events</text>
+<text x="1127.5" y="444.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">deterministic analytics</text>
+<text x="1127.5" y="461.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">no scores or rankings</text>
+<text x="1127.5" y="478.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">alphabetical members</text>
+<path d="M1150,240 L1150,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M1105,330 L1105,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<rect x="1255" y="330" width="215" height="190" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1362.5" y="397.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Report</text>
+<text x="1362.5" y="418.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">ReportLab PDF</text>
+<text x="1362.5" y="435.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">plus CSV export</text>
+<text x="1362.5" y="452.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">built from validated</text>
+<text x="1362.5" y="469.5" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">findings only</text>
+<path d="M1385,240 L1385,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M1340,330 L1340,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<rect x="1490" y="330" width="215" height="190" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1597.5" y="389.0" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Approval</text>
+<text x="1597.5" y="410.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">interrupt() pauses graph</text>
+<text x="1597.5" y="427.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">checkpoint persisted</text>
+<text x="1597.5" y="444.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">only hr_manager / admin</text>
+<text x="1597.5" y="461.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">decision honoured</text>
+<text x="1597.5" y="478.0" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">then queues email</text>
+<path d="M1620,240 L1620,330" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#ah)"/>
+<path d="M1575,330 L1575,285" stroke="#475569" stroke-width="1.5" fill="none"/>
+<path d="M165,285 L1575,285" stroke="#475569" stroke-width="1.6" fill="none"/>
+<text x="80" y="560" font-size="13" fill="#7c3aed" font-weight="600" text-anchor="start">Parallel stage in onboarding:  Document Intelligence ‖ HR Policy run together, merged by reducers</text>
+<rect x="80" y="600" width="540" height="190" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="100" y="632" font-size="15" fill="#1e293b" font-weight="700" text-anchor="start">Shared state — HRGraphState</text>
+<text x="100" y="664" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• holds IDs, ISO dates, masked values — not raw PII</text>
+<text x="100" y="690" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• list fields use keyed-merge reducers</text>
+<text x="100" y="716" font-size="13" fill="#475569" font-weight="400" text-anchor="start">  (finding_id, draft_id …) → retries &amp; resumes are idempotent</text>
+<text x="100" y="742" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• per-agent timing, attempts and status recorded</text>
+<rect x="650" y="600" width="540" height="190" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+<text x="670" y="632" font-size="15" fill="#1e293b" font-weight="700" text-anchor="start">Guards &amp; limits — guarded()</text>
+<text x="670" y="664" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• each agent retried once, then marked failed</text>
+<text x="670" y="690" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• supervisor stops with a &quot;partial&quot; result</text>
+<text x="670" y="716" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• Supervisor may only choose from a closed task enum</text>
+<text x="670" y="742" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• unsupported asks (rank, hire/fire, payroll) → refused</text>
+<rect x="1220" y="600" width="540" height="190" rx="12" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+<text x="1240" y="632" font-size="15" fill="#1e293b" font-weight="700" text-anchor="start">Persistence &amp; observability</text>
+<text x="1240" y="664" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• SQLite / Postgres checkpointer (thread per request)</text>
+<text x="1240" y="690" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• audit_log rows: agent runs, denials, approvals</text>
+<text x="1240" y="716" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• logs/hr360.log + optional LangSmith traces</text>
+<text x="1240" y="742" font-size="13" fill="#475569" font-weight="400" text-anchor="start">• outbox write happens only after an approval</text>
+<text x="80" y="830" font-size="16" fill="#be185d" font-weight="700" text-anchor="start">Human-in-the-loop gate (workflow C)</text>
+<rect x="80" y="850" width="280" height="70" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="220.0" y="882.75" font-size="14.5" fill="#1e293b" font-weight="700" text-anchor="middle">Approval node</text>
+<text x="220.0" y="903.75" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">interrupt()</text>
+<path d="M360,885 L420,885" fill="none" stroke="#db2777" stroke-width="1.8" marker-end="url(#ahp)"/>
+<rect x="420" y="850" width="280" height="70" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="560.0" y="882.75" font-size="14.5" fill="#1e293b" font-weight="700" text-anchor="middle">Graph paused</text>
+<text x="560.0" y="903.75" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">state in checkpointer</text>
+<path d="M700,885 L760,885" fill="none" stroke="#db2777" stroke-width="1.8" marker-end="url(#ahp)"/>
+<rect x="760" y="850" width="280" height="70" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="900.0" y="882.75" font-size="14.5" fill="#1e293b" font-weight="700" text-anchor="middle">hr_manager reviews</text>
+<text x="900.0" y="903.75" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">drafts + findings</text>
+<path d="M1040,885 L1100,885" fill="none" stroke="#db2777" stroke-width="1.8" marker-end="url(#ahp)"/>
+<rect x="1100" y="850" width="280" height="70" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1240.0" y="882.75" font-size="14.5" fill="#1e293b" font-weight="700" text-anchor="middle">Resume(decision)</text>
+<text x="1240.0" y="903.75" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">thread continues</text>
+<path d="M1380,885 L1440,885" fill="none" stroke="#db2777" stroke-width="1.8" marker-end="url(#ahp)"/>
+<rect x="1440" y="850" width="280" height="70" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6" filter="url(#sh)"/>
+<text x="1580.0" y="882.75" font-size="14.5" fill="#1e293b" font-weight="700" text-anchor="middle">Outbox / Resend</text>
+<text x="1580.0" y="903.75" font-size="12" fill="#475569" font-weight="400" text-anchor="middle">approved drafts only</text>
+<text x="80" y="970" font-size="13" fill="#475569" font-weight="700" text-anchor="start">Legend:</text>
+<rect x="140" y="958" width="18" height="14" rx="3" fill="#ede9fe" stroke="#7c3aed"/>
+<text x="165" y="970" font-size="12" fill="#475569" font-weight="400" text-anchor="start">orchestration</text>
+<rect x="260" y="958" width="18" height="14" rx="3" fill="#fef3c7" stroke="#d97706"/>
+<text x="285" y="970" font-size="12" fill="#475569" font-weight="400" text-anchor="start">specialist agent</text>
+<rect x="395" y="958" width="18" height="14" rx="3" fill="#fce7f3" stroke="#db2777"/>
+<text x="420" y="970" font-size="12" fill="#475569" font-weight="400" text-anchor="start">human gate</text>
+<text x="540" y="970" font-size="12" fill="#475569" font-weight="400" text-anchor="start">dashed purple = conditional route from dispatch · solid grey = return to dispatch</text>
+</svg>

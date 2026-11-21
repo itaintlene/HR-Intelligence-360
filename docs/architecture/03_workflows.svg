@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1040" viewBox="0 0 1800 1040" font-family="Segoe UI, Arial, sans-serif">
+<defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#475569"/></marker><marker id="ahp" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#db2777"/></marker><filter id="sh" x="-5%" y="-5%" width="110%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.13"/></filter></defs>
+<rect width="1800" height="1040" fill="#f8fafc"/>
+<text x="40" y="48" font-size="28" font-weight="700" fill="#1e293b">Workflows — Fixed Plans per Task Type</text>
+<text x="40" y="74" font-size="15" fill="#475569">The Supervisor can only pick a task type; the stages below are a constant table it can never rewrite</text>
+<rect x="40" y="100" width="1720" height="56" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6" filter="url(#sh)"/>
+<text x="900.0" y="134.5" font-size="15" fill="#1e293b" font-weight="700" text-anchor="middle">Every request:  Supervisor classifies intent  →  RBAC check  →  fixed plan chosen  →  stages run via dispatch hub  →  Finalize</text>
+<rect x="40" y="185" width="1720" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="60" y="215" font-size="16" fill="#1e293b" font-weight="700" text-anchor="start">A · Policy question</text>
+<text x="60" y="237" font-size="12.5" fill="#7c3aed" font-weight="600" text-anchor="start">policy_question</text>
+<text x="60" y="263" font-size="12" fill="#475569" font-weight="400" text-anchor="start" font-style="italic">“How many earned-leave days can I carry forward?”</text>
+<text x="60" y="293" font-size="12" fill="#0d9488" font-weight="600" text-anchor="start">Who: Any role</text>
+<rect x="400" y="220.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="247.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Policy</text>
+<text x="478.0" y="267.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">RAG · cited answer</text>
+<path d="M556,250.0 L576,250.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576" y="220.0" width="120" height="60" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
+<text x="636.0" y="255.5" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1610" y="241" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">Output</text>
+<text x="1610" y="261" font-size="12" fill="#475569" font-weight="400" text-anchor="start">Cited answer, or a refusal</text>
+<text x="1610" y="278" font-size="12" fill="#475569" font-weight="400" text-anchor="start">when the policies don’t</text>
+<text x="1610" y="295" font-size="12" fill="#475569" font-weight="400" text-anchor="start">support one</text>
+<rect x="40" y="323" width="1720" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="60" y="353" font-size="16" fill="#1e293b" font-weight="700" text-anchor="start">B · Document audit</text>
+<text x="60" y="375" font-size="12.5" fill="#7c3aed" font-weight="600" text-anchor="start">document_audit</text>
+<text x="60" y="401" font-size="12" fill="#475569" font-weight="400" text-anchor="start" font-style="italic">“Audit these uploaded documents”</text>
+<text x="60" y="431" font-size="12" fill="#0d9488" font-weight="600" text-anchor="start">Who: hr_staff+</text>
+<rect x="400" y="358.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="385.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Document Intelligence</text>
+<text x="478.0" y="405.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">OCR · extract · confidence</text>
+<path d="M556,388.0 L576,388.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576" y="358.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="654.0" y="385.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Audit</text>
+<text x="654.0" y="405.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">rules engine</text>
+<path d="M732,388.0 L752,388.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="752" y="358.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="830.0" y="385.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Report</text>
+<text x="830.0" y="405.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">PDF + CSV</text>
+<path d="M908,388.0 L928,388.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="928" y="358.0" width="120" height="60" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
+<text x="988.0" y="393.5" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1610" y="379" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">Output</text>
+<text x="1610" y="399" font-size="12" fill="#475569" font-weight="400" text-anchor="start">Findings with evidence,</text>
+<text x="1610" y="416" font-size="12" fill="#475569" font-weight="400" text-anchor="start">mismatches, expired IDs,</text>
+<text x="1610" y="433" font-size="12" fill="#475569" font-weight="400" text-anchor="start">injection flags</text>
+<rect x="40" y="461" width="1720" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="60" y="491" font-size="16" fill="#1e293b" font-weight="700" text-anchor="start">C · Onboarding automation</text>
+<text x="60" y="513" font-size="12.5" fill="#7c3aed" font-weight="600" text-anchor="start">onboarding</text>
+<text x="60" y="539" font-size="12" fill="#475569" font-weight="400" text-anchor="start" font-style="italic">“Run onboarding for EMP-1031, EMP-1035”</text>
+<text x="60" y="569" font-size="12" fill="#0d9488" font-weight="600" text-anchor="start">Who: run: hr_staff · approve: hr_manager</text>
+<rect x="400" y="478.0" width="156" height="44" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="497.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Document Intelligence</text>
+<text x="478.0" y="517.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">extract</text>
+<rect x="400" y="530.0" width="156" height="44" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="549.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Policy</text>
+<text x="478.0" y="569.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">orientation facts</text>
+<text x="478.0" y="584.0" font-size="11" fill="#7c3aed" font-weight="700" text-anchor="middle">‖ parallel</text>
+<path d="M556,526.0 L576,526.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576" y="496.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="654.0" y="523.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Audit</text>
+<text x="654.0" y="543.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">missing docs</text>
+<path d="M732,526.0 L752,526.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="752" y="496.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="830.0" y="523.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Workflow</text>
+<text x="830.0" y="543.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">checklist + drafts</text>
+<path d="M908,526.0 L928,526.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="928" y="496.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="1006.0" y="523.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Report</text>
+<text x="1006.0" y="543.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">PDF + CSV</text>
+<path d="M1084,526.0 L1104,526.0" fill="none" stroke="#db2777" stroke-width="1.8" marker-end="url(#ahp)"/>
+<rect x="1104" y="496.0" width="156" height="60" rx="10" fill="#fce7f3" stroke="#db2777" stroke-width="1.6"/>
+<text x="1182.0" y="523.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Approval</text>
+<text x="1182.0" y="543.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">human gate</text>
+<path d="M1260,526.0 L1280,526.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="1280" y="496.0" width="120" height="60" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
+<text x="1340.0" y="531.5" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1610" y="517" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">Output</text>
+<text x="1610" y="537" font-size="12" fill="#475569" font-weight="400" text-anchor="start">Drafts queued to outbox only</text>
+<text x="1610" y="554" font-size="12" fill="#475569" font-weight="400" text-anchor="start">after approval</text>
+<rect x="40" y="599" width="1720" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="60" y="629" font-size="16" fill="#1e293b" font-weight="700" text-anchor="start">D · Audit summary</text>
+<text x="60" y="651" font-size="12.5" fill="#7c3aed" font-weight="600" text-anchor="start">audit_summary</text>
+<text x="60" y="677" font-size="12" fill="#475569" font-weight="400" text-anchor="start" font-style="italic">“Give me an audit summary of all employees”</text>
+<text x="60" y="707" font-size="12" fill="#0d9488" font-weight="600" text-anchor="start">Who: hr_staff+</text>
+<rect x="400" y="634.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="661.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Audit</text>
+<text x="478.0" y="681.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">all employees</text>
+<path d="M556,664.0 L576,664.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576" y="634.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="654.0" y="661.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Workflow</text>
+<text x="654.0" y="681.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">follow-up tasks</text>
+<path d="M732,664.0 L752,664.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="752" y="634.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="830.0" y="661.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Report</text>
+<text x="830.0" y="681.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">PDF + CSV</text>
+<path d="M908,664.0 L928,664.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="928" y="634.0" width="120" height="60" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
+<text x="988.0" y="669.5" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1610" y="655" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">Output</text>
+<text x="1610" y="675" font-size="12" fill="#475569" font-weight="400" text-anchor="start">Dashboard, prioritised</text>
+<text x="1610" y="692" font-size="12" fill="#475569" font-weight="400" text-anchor="start">tasks, downloadable report</text>
+<rect x="40" y="737" width="1720" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="60" y="767" font-size="16" fill="#1e293b" font-weight="700" text-anchor="start">E · Work tracking</text>
+<text x="60" y="789" font-size="12.5" fill="#7c3aed" font-weight="600" text-anchor="start">project_status / person_record</text>
+<text x="60" y="815" font-size="12" fill="#475569" font-weight="400" text-anchor="start" font-style="italic">“Status of Project Atlas?” · “Show Priya’s record”</text>
+<text x="60" y="845" font-size="12" fill="#0d9488" font-weight="600" text-anchor="start">Who: own data · PM: managed projects · HR: all</text>
+<rect x="400" y="772.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="799.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Work Insights</text>
+<text x="478.0" y="819.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">stand-ups · milestones · GitHub</text>
+<path d="M556,802.0 L576,802.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576" y="772.0" width="120" height="60" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
+<text x="636.0" y="807.5" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1610" y="793" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">Output</text>
+<text x="1610" y="813" font-size="12" fill="#475569" font-weight="400" text-anchor="start">Facts and flags — never a</text>
+<text x="1610" y="830" font-size="12" fill="#475569" font-weight="400" text-anchor="start">score or ranking</text>
+<rect x="40" y="875" width="1720" height="130" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="60" y="905" font-size="16" fill="#1e293b" font-weight="700" text-anchor="start">F · Leave / pending tasks</text>
+<text x="60" y="927" font-size="12.5" fill="#7c3aed" font-weight="600" text-anchor="start">leave_summary</text>
+<text x="60" y="953" font-size="12" fill="#475569" font-weight="400" text-anchor="start" font-style="italic">“Who is on leave next week?”</text>
+<text x="60" y="983" font-size="12" fill="#0d9488" font-weight="600" text-anchor="start">Who: role-scoped</text>
+<rect x="400" y="910.0" width="156" height="60" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.6"/>
+<text x="478.0" y="937.75" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">HR Workflow</text>
+<text x="478.0" y="957.25" font-size="10.5" fill="#475569" font-weight="400" text-anchor="middle">leave summary</text>
+<path d="M556,940.0 L576,940.0" fill="none" stroke="#475569" stroke-width="1.8" marker-end="url(#ah)"/>
+<rect x="576" y="910.0" width="120" height="60" rx="10" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.6"/>
+<text x="636.0" y="945.5" font-size="13" fill="#1e293b" font-weight="700" text-anchor="middle">Finalize</text>
+<text x="1610" y="931" font-size="12" fill="#64748b" font-weight="700" text-anchor="start">Output</text>
+<text x="1610" y="951" font-size="12" fill="#475569" font-weight="400" text-anchor="start">Summary only — leave</text>
+<text x="1610" y="968" font-size="12" fill="#475569" font-weight="400" text-anchor="start">decisions are never</text>
+<text x="1610" y="985" font-size="12" fill="#475569" font-weight="400" text-anchor="start">automated</text>
+<text x="40" y="1025" font-size="13" fill="#b91c1c" font-weight="600" text-anchor="start">Fallback: anything outside these task types (hiring/firing, payroll, “rank my team”, stock options …) routes to  unsupported  and is politely refused.</text>
+</svg>
